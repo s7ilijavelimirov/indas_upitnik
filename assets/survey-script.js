@@ -36,15 +36,20 @@ jQuery(document).ready(function ($) {
                         $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
                     }, 3000);
 
+                    // Scroll to success message
+                    scrollToMessage($message);
+
                 } else {
                     $message.html('<div class="error-message">' + response.data + '</div>');
                     $submitBtn.text('Pošalji');
+                    scrollToMessage($message);
                 }
             },
             error: function () {
                 $form.removeClass('loading');
                 $submitBtn.prop('disabled', false).text('Pošalji');
                 $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
+                scrollToMessage($message);
             }
         });
     });
@@ -85,15 +90,20 @@ jQuery(document).ready(function ($) {
                         $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
                     }, 3000);
 
+                    // Scroll to success message
+                    scrollToMessage($message);
+
                 } else {
                     $message.html('<div class="error-message">' + response.data + '</div>');
                     $submitBtn.text('Pošalji');
+                    scrollToMessage($message);
                 }
             },
             error: function () {
                 $form.removeClass('loading');
                 $submitBtn.prop('disabled', false).text('Pošalji');
                 $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
+                scrollToMessage($message);
             }
         });
     });
@@ -119,17 +129,25 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    $('input[required], textarea[required]').on('input', function () {
+        if ($(this).val().trim() !== '') {
+            $(this).removeClass('error');
+            $(this).siblings('.error-text').remove();
+        }
+    });
+
     // Email validation
     $('input[type="email"]').on('blur', function () {
         var email = $(this).val();
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        $(this).siblings('.error-text').remove();
+
         if (email && !emailRegex.test(email)) {
             $(this).addClass('error');
             $(this).after('<span class="error-text">Molimo unesite ispravnu email adresu</span>');
-        } else {
+        } else if (email) {
             $(this).removeClass('error');
-            $(this).siblings('.error-text').remove();
         }
     });
 
@@ -154,7 +172,7 @@ jQuery(document).ready(function ($) {
 
     // Smooth scrolling to form messages
     function scrollToMessage($message) {
-        if ($message.length) {
+        if ($message.length && $message.html().trim() !== '') {
             $('html, body').animate({
                 scrollTop: $message.offset().top - 100
             }, 500);
@@ -179,25 +197,37 @@ jQuery(document).ready(function ($) {
         var filledFields = 0;
 
         $form.find('input[required], textarea[required], select[required]').each(function () {
-            if ($(this).val().trim() !== '') {
+            if ($(this).attr('type') === 'radio') {
+                var name = $(this).attr('name');
+                if ($form.find('input[name="' + name + '"]:checked').length > 0) {
+                    filledFields++;
+                }
+                // Don't count each radio button individually
+                $form.find('input[name="' + name + '"]').not(this).attr('data-counted', 'true');
+                if ($(this).attr('data-counted') === 'true') {
+                    return;
+                }
+            } else if ($(this).val().trim() !== '') {
                 filledFields++;
             }
         });
 
-        var progress = Math.round((filledFields / totalFields) * 100);
+        var progress = totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
 
         // Update or create progress bar
-        var $progressBar = $form.find('.progress-bar');
+        var $progressBar = $form.find('.progress-container');
         if ($progressBar.length === 0) {
             $form.prepend('<div class="progress-container"><div class="progress-bar"><div class="progress-fill"></div></div><span class="progress-text">Popunjeno: 0%</span></div>');
-            $progressBar = $form.find('.progress-bar');
+            $progressBar = $form.find('.progress-container');
         }
 
         $form.find('.progress-fill').css('width', progress + '%');
         $form.find('.progress-text').text('Popunjeno: ' + progress + '%');
 
         if (progress === 100) {
-            $form.find('.progress-container').addClass('complete');
+            $progressBar.addClass('complete');
+        } else {
+            $progressBar.removeClass('complete');
         }
     }
 
@@ -223,6 +253,36 @@ jQuery(document).ready(function ($) {
                 submittedForms.splice(index, 1);
             }
         }, 5000);
+    });
+
+    // Handle rating group clicks better
+    $('.rating-group label').on('click', function(e) {
+        var $input = $(this).find('input[type="radio"]');
+        if ($input.length) {
+            $input.prop('checked', true).trigger('change');
+            
+            // Visual feedback
+            $(this).closest('.rating-group').find('label').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    });
+
+    // Better form reset handling
+    $('form').on('reset', function() {
+        var $form = $(this);
+        setTimeout(function() {
+            $form.find('.error').removeClass('error');
+            $form.find('.error-text').remove();
+            $form.find('.selected').removeClass('selected');
+            updateProgressIndicator($form);
+        }, 10);
+    });
+
+    // Form field focus improvements
+    $('input, textarea').on('focus', function() {
+        $(this).closest('.form-row').addClass('focused');
+    }).on('blur', function() {
+        $(this).closest('.form-row').removeClass('focused');
     });
 
 });

@@ -79,6 +79,7 @@ class DualSurveySystem
         $screen = get_current_screen();
         if (strpos($screen->id, 'survey') !== false) {
             wp_enqueue_style('survey-admin-style', SURVEY_PLUGIN_URL . 'assets/admin-style.css', array(), '1.0.0');
+            wp_enqueue_script('survey-admin-script', SURVEY_PLUGIN_URL . 'assets/admin-script.js', array('jquery'), '1.0.0', true);
         }
     }
 }

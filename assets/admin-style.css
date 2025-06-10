@@ -1,0 +1,335 @@
+/* Admin Dashboard Styles */
+
+.dashboard-widgets-wrap .postbox {
+    margin-bottom: 20px;
+}
+
+.dashboard-widgets-wrap .inside {
+    padding: 15px;
+}
+
+.dashboard-widgets-wrap .inside p {
+    margin: 10px 0;
+}
+
+/* QR Codes Page */
+.qr-codes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.qr-code-section {
+    border: 1px solid #ccc;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.qr-code-section h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+.qr-code img {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.instructions {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.instructions h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.instructions ul {
+    margin-left: 20px;
+}
+
+.instructions code {
+    background: #f1f1f1;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Table Styles */
+.wp-list-table th,
+.wp-list-table td {
+    padding: 12px 8px;
+}
+
+.wp-list-table .column-id {
+    width: 60px;
+}
+
+.wp-list-table .column-type {
+    width: 80px;
+}
+
+.wp-list-table .column-actions {
+    width: 100px;
+}
+
+/* Feedback Type Badges */
+.feedback-type {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.feedback-type.standard {
+    background: #e7f3ff;
+    color: #0073aa;
+    border: 1px solid #0073aa;
+}
+
+.feedback-type.inhouse {
+    background: #fff2e7;
+    color: #d54e21;
+    border: 1px solid #d54e21;
+}
+
+/* Modal Styles */
+#feedback-modal {
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: none;
+}
+
+.feedback-modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.feedback-modal-content h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 10px;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close:hover {
+    color: #333;
+    background: #f1f1f1;
+}
+
+/* Button Styles */
+.button.view-details {
+    background: #0073aa;
+    border-color: #0073aa;
+    color: #fff;
+}
+
+.button.view-details:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+/* Export Button */
+.button.button-secondary {
+    margin-left: 10px;
+}
+
+/* Statistics Cards */
+.dashboard-widgets-wrap .postbox {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.dashboard-widgets-wrap .postbox h2 {
+    border-bottom: 1px solid #c3c4c7;
+    color: #1d2327;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+    padding: 8px 12px;
+    background: #f6f7f7;
+}
+
+.dashboard-widgets-wrap .inside p strong {
+    color: #1d2327;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 782px) {
+    .qr-codes-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .qr-code-section {
+        padding: 15px;
+    }
+    
+    .feedback-modal-content {
+        width: 95%;
+        margin: 2% auto;
+        max-height: 95vh;
+    }
+    
+    .wp-list-table {
+        font-size: 14px;
+    }
+    
+    .wp-list-table th,
+    .wp-list-table td {
+        padding: 8px 4px;
+    }
+}
+
+/* Loading States */
+.loading-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.notice.notice-success {
+    border-left-color: #00a32a;
+}
+
+.notice.notice-error {
+    border-left-color: #d63638;
+}
+
+/* Table Sorting */
+.wp-list-table th.sortable a,
+.wp-list-table th.sorted a {
+    color: #1d2327;
+    text-decoration: none;
+}
+
+.wp-list-table th.sortable:hover,
+.wp-list-table th.sorted:hover {
+    background: #f6f7f7;
+}
+
+/* Progress Indicators in Admin */
+.admin-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.admin-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: #f1f1f1;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.admin-progress-fill {
+    height: 100%;
+    background: #0073aa;
+    transition: width 0.3s ease;
+}
+
+.admin-progress-text {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* Shortcode Display */
+.shortcode-display {
+    background: #f1f1f1;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    display: inline-block;
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #0073aa;
+    display: block;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+}

@@ -49,6 +49,7 @@ class Survey_Database
             additional_comments text,
             submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
             language varchar(2) DEFAULT 'sr',
+            feedback_type varchar(20) DEFAULT 'standard',
             PRIMARY KEY (id)
         ) $charset_collate;";
 
@@ -81,12 +82,13 @@ class Survey_Database
         return $result;
     }
 
-    // Ostale funkcije ostaju iste...
     public static function save_feedback($data)
     {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'course_feedback';
+
+        $feedback_type = isset($data['feedback_type']) ? $data['feedback_type'] : 'standard';
 
         $result = $wpdb->insert(
             $table_name,
@@ -97,16 +99,17 @@ class Survey_Database
                 'lecturer_quality' => intval($data['lecturer_quality']),
                 'practical_application' => intval($data['practical_application']),
                 'literature' => intval($data['literature']),
-                'premises' => intval($data['premises']),
-                'food' => intval($data['food']),
-                'cooperation' => intval($data['cooperation']),
+                'premises' => isset($data['premises']) ? intval($data['premises']) : null,
+                'food' => isset($data['food']) ? intval($data['food']) : null,
+                'cooperation' => isset($data['cooperation']) ? intval($data['cooperation']) : null,
                 'advanced_step7' => sanitize_textarea_field($data['advanced_step7']),
                 'other_courses' => sanitize_textarea_field($data['other_courses']),
                 'improvements' => sanitize_textarea_field($data['improvements']),
                 'additional_comments' => sanitize_textarea_field($data['additional_comments']),
-                'language' => sanitize_text_field($data['language'])
+                'language' => sanitize_text_field($data['language']),
+                'feedback_type' => sanitize_text_field($feedback_type)
             ),
-            array('%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s')
+            array('%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
         );
 
         return $result;
@@ -158,5 +161,15 @@ class Survey_Database
         global $wpdb;
         $table_name = $wpdb->prefix . 'course_feedback';
         return $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+    }
+
+    public static function get_feedback_details($id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'course_feedback';
+
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id)
+        );
     }
 }

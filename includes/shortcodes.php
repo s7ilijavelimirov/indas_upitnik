@@ -12,10 +12,13 @@ class Survey_Shortcodes
     {
         add_shortcode('registration_form', array(__CLASS__, 'registration_form'));
         add_shortcode('feedback_form', array(__CLASS__, 'feedback_form'));
+        add_shortcode('feedback_form_inhouse', array(__CLASS__, 'feedback_form_inhouse'));
         add_action('wp_ajax_submit_registration', array(__CLASS__, 'handle_registration'));
         add_action('wp_ajax_nopriv_submit_registration', array(__CLASS__, 'handle_registration'));
         add_action('wp_ajax_submit_feedback', array(__CLASS__, 'handle_feedback'));
         add_action('wp_ajax_nopriv_submit_feedback', array(__CLASS__, 'handle_feedback'));
+        add_action('wp_ajax_get_feedback_details', array(__CLASS__, 'get_feedback_details'));
+        add_action('wp_ajax_nopriv_get_feedback_details', array(__CLASS__, 'get_feedback_details'));
     }
 
     public static function registration_form($atts)
@@ -30,35 +33,25 @@ class Survey_Shortcodes
         $texts = array(
             'sr' => array(
                 'title' => 'Registracija polaznika kursa',
-                'course_name' => 'Naziv kursa:',
-                'course_date' => 'Datum kursa:',
-                'location' => 'Mesto održavanja:',
-                'first_name' => 'Ime:',
-                'last_name' => 'Prezime:',
+                'participant_name' => 'Ime i prezime polaznika:',
                 'company' => 'Kompanija:',
                 'address' => 'Adresa:',
                 'position' => 'Radno mesto:',
                 'phone' => 'Telefon:',
                 'mobile' => 'Mobilni:',
                 'email' => 'E-mail:',
-                'submit' => 'Pošalji',
-                'required' => 'Obavezno polje'
+                'submit' => 'Pošalji'
             ),
             'en' => array(
                 'title' => 'Course Participant Registration',
-                'course_name' => 'Course Name:',
-                'course_date' => 'Course Date:',
-                'location' => 'Location:',
-                'first_name' => 'First Name:',
-                'last_name' => 'Last Name:',
+                'participant_name' => 'Participant Name:',
                 'company' => 'Company:',
                 'address' => 'Address:',
                 'position' => 'Position:',
                 'phone' => 'Phone:',
                 'mobile' => 'Mobile:',
                 'email' => 'E-mail:',
-                'submit' => 'Submit',
-                'required' => 'Required field'
+                'submit' => 'Submit'
             )
         );
 
@@ -73,28 +66,8 @@ class Survey_Shortcodes
                 <input type="hidden" name="language" value="<?php echo $lang; ?>">
 
                 <div class="form-row">
-                    <label><?php echo $t['course_name']; ?> *</label>
-                    <input type="text" name="course_name" required>
-                </div>
-
-                <div class="form-row">
-                    <label><?php echo $t['course_date']; ?> *</label>
-                    <input type="text" name="course_date" required>
-                </div>
-
-                <div class="form-row">
-                    <label><?php echo $t['location']; ?> *</label>
-                    <input type="text" name="location" required>
-                </div>
-
-                <div class="form-row">
-                    <label><?php echo $t['first_name']; ?> *</label>
-                    <input type="text" name="first_name" required>
-                </div>
-
-                <div class="form-row">
-                    <label><?php echo $t['last_name']; ?> *</label>
-                    <input type="text" name="last_name" required>
+                    <label><?php echo $t['participant_name']; ?> *</label>
+                    <input type="text" name="participant_name" required>
                 </div>
 
                 <div class="form-row">
@@ -224,12 +197,76 @@ class Survey_Shortcodes
         $t = $texts[$lang];
 
         ob_start();
+        return self::render_feedback_form($t, 'standard', $lang);
+    }
+
+    public static function feedback_form_inhouse($atts)
+    {
+        $atts = shortcode_atts(array(
+            'lang' => 'sr'
+        ), $atts);
+
+        $lang = $atts['lang'];
+
+        // Tekstovi za in-house verziju (bez prostorija, hrane, saradnje)
+        $texts = array(
+            'sr' => array(
+                'title' => 'Upitnik za polaznike kursa',
+                'rate_following' => 'Molimo Vas da ocenite:',
+                'expectations_met' => 'Da li je kurs ispunio Vaša očekivanja?',
+                'expectations_level' => 'U kojoj meri je ispunio Vaša očekivanja?',
+                'lecture_quality' => 'Kvalitet predavanja:',
+                'lecturer_quality' => 'Kvalitet predavača:',
+                'practical_application' => 'Primenjivost naučenog u praksi:',
+                'literature' => 'Literatura:',
+                'rate_organization' => 'Molimo Vas da ocenite organizaciju kursa:',
+                'organization_rating' => 'U kojoj meri ste zadovoljni organizacijom:',
+                'future_courses' => 'Da li ste zainteresovani za dalje usavršavanje na budućim kursevima?',
+                'advanced_step7' => 'Napredni kursevi STEP7:',
+                'other_courses' => 'Kursevi iz drugih oblasti:',
+                'improvements' => 'Šta bi po Vašem mišljenju unapredilo kvalitet kursa i omogućilo Vam da bolje savladate gradivo?',
+                'additional_comments' => 'Dodao/la bih:',
+                'yes' => 'Da',
+                'no' => 'Ne',
+                'submit' => 'Pošalji'
+            ),
+            'en' => array(
+                'title' => 'Course Participant Questionnaire',
+                'rate_following' => 'Please rate the following:',
+                'expectations_met' => 'Did the course meet your expectations?',
+                'expectations_level' => 'To what extent did it meet your expectations?',
+                'lecture_quality' => 'Quality of lectures:',
+                'lecturer_quality' => 'Quality of the lecturer:',
+                'practical_application' => 'Applicability of what has been learned in practice:',
+                'literature' => 'Literature:',
+                'rate_organization' => 'Please rate the organization of the course:',
+                'organization_rating' => 'To what extent are you satisfied with the organization:',
+                'future_courses' => 'Are you interested in further development in future courses?',
+                'advanced_step7' => 'Advanced courses STEP7:',
+                'other_courses' => 'Courses in other fields:',
+                'improvements' => 'In your opinion, what would improve the quality of the course and enable you to master the material better?',
+                'additional_comments' => 'I would add:',
+                'yes' => 'Yes',
+                'no' => 'No',
+                'submit' => 'Submit'
+            )
+        );
+
+        $t = $texts[$lang];
+
+        return self::render_feedback_form($t, 'inhouse', $lang);
+    }
+
+    private static function render_feedback_form($t, $type, $lang)
+    {
+        ob_start();
     ?>
         <div class="survey-form feedback-form">
             <h3><?php echo $t['title']; ?></h3>
             <form id="feedback-form" method="post">
                 <?php wp_nonce_field('feedback_nonce', 'feedback_nonce'); ?>
                 <input type="hidden" name="language" value="<?php echo $lang; ?>">
+                <input type="hidden" name="feedback_type" value="<?php echo $type; ?>">
 
                 <h4><?php echo $t['rate_following']; ?></h4>
 
@@ -286,34 +323,47 @@ class Survey_Shortcodes
                     </div>
                 </div>
 
-                <h4><?php echo $t['rate_organization']; ?></h4>
+                <?php if ($type === 'standard'): ?>
+                    <h4><?php echo $t['rate_organization']; ?></h4>
 
-                <div class="form-row">
-                    <label><?php echo $t['premises']; ?></label>
-                    <div class="rating-group">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <label><input type="radio" name="premises" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
-                        <?php endfor; ?>
+                    <div class="form-row">
+                        <label><?php echo $t['premises']; ?></label>
+                        <div class="rating-group">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <label><input type="radio" name="premises" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
+                            <?php endfor; ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <label><?php echo $t['food']; ?></label>
-                    <div class="rating-group">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <label><input type="radio" name="food" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
-                        <?php endfor; ?>
+                    <div class="form-row">
+                        <label><?php echo $t['food']; ?></label>
+                        <div class="rating-group">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <label><input type="radio" name="food" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
+                            <?php endfor; ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <label><?php echo $t['cooperation']; ?></label>
-                    <div class="rating-group">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <label><input type="radio" name="cooperation" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
-                        <?php endfor; ?>
+                    <div class="form-row">
+                        <label><?php echo $t['cooperation']; ?></label>
+                        <div class="rating-group">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <label><input type="radio" name="cooperation" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
+                            <?php endfor; ?>
+                        </div>
                     </div>
-                </div>
+                <?php else: ?>
+                    <h4><?php echo $t['rate_organization']; ?></h4>
+
+                    <div class="form-row">
+                        <label><?php echo $t['organization_rating']; ?></label>
+                        <div class="rating-group">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <label><input type="radio" name="premises" value="<?php echo $i; ?>" required> <?php echo $i; ?></label>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <h4><?php echo $t['future_courses']; ?></h4>
 
@@ -390,10 +440,12 @@ class Survey_Shortcodes
             $admin_email = get_option('admin_email');
             $subject = 'Nova registracija polaznika kursa';
             $message = "Nova registracija polaznika:\n\n";
-            $message .= "Ime: " . $data['first_name'] . " " . $data['last_name'] . "\n";
+            $message .= "Ime: " . $data['participant_name'] . "\n";
             $message .= "Kompanija: " . $data['company'] . "\n";
             $message .= "Email: " . $data['email'] . "\n";
-            $message .= "Kurs: " . $data['course_name'] . "\n";
+            $message .= "Pozicija: " . $data['position'] . "\n";
+            $message .= "Telefon: " . $data['phone'] . "\n";
+            $message .= "Mobilni: " . $data['mobile'] . "\n";
 
             wp_mail($admin_email, $subject, $message);
 
@@ -421,6 +473,7 @@ class Survey_Shortcodes
             $message .= "Ocena kvaliteta predavanja: " . $data['lecture_quality'] . "/5\n";
             $message .= "Ocena kvaliteta predavača: " . $data['lecturer_quality'] . "/5\n";
             $message .= "Kurs ispunio očekivanja: " . $data['expectations_met'] . "\n";
+            $message .= "Tip: " . (isset($data['feedback_type']) ? $data['feedback_type'] : 'standard') . "\n";
 
             wp_mail($admin_email, $subject, $message);
 
@@ -428,5 +481,52 @@ class Survey_Shortcodes
         } else {
             wp_send_json_error('Greška prilikom slanja. Pokušajte ponovo.');
         }
+    }
+
+    public static function get_feedback_details()
+    {
+        if (!isset($_POST['id'])) {
+            wp_die('Nedostaje ID');
+        }
+
+        $id = intval($_POST['id']);
+        $feedback = Survey_Database::get_feedback_details($id);
+
+        if ($feedback) {
+            echo '<h3>Feedback detalji #' . $feedback->id . '</h3>';
+            echo '<p><strong>Datum:</strong> ' . date('d.m.Y H:i', strtotime($feedback->submitted_at)) . '</p>';
+            echo '<p><strong>Tip:</strong> ' . ucfirst($feedback->feedback_type) . '</p>';
+            echo '<p><strong>Očekivanja ispunjena:</strong> ' . $feedback->expectations_met . '</p>';
+            echo '<p><strong>Nivo očekivanja:</strong> ' . $feedback->expectations_level . '/5</p>';
+            echo '<p><strong>Kvalitet predavanja:</strong> ' . $feedback->lecture_quality . '/5</p>';
+            echo '<p><strong>Kvalitet predavača:</strong> ' . $feedback->lecturer_quality . '/5</p>';
+            echo '<p><strong>Primenjivost:</strong> ' . $feedback->practical_application . '/5</p>';
+            echo '<p><strong>Literatura:</strong> ' . $feedback->literature . '/5</p>';
+
+            if ($feedback->premises) {
+                echo '<p><strong>Prostorije:</strong> ' . $feedback->premises . '/5</p>';
+            }
+            if ($feedback->food) {
+                echo '<p><strong>Ishrana:</strong> ' . $feedback->food . '/5</p>';
+            }
+            if ($feedback->cooperation) {
+                echo '<p><strong>Saradnja:</strong> ' . $feedback->cooperation . '/5</p>';
+            }
+
+            if ($feedback->advanced_step7) {
+                echo '<p><strong>Napredni STEP7:</strong> ' . esc_html($feedback->advanced_step7) . '</p>';
+            }
+            if ($feedback->other_courses) {
+                echo '<p><strong>Drugi kursevi:</strong> ' . esc_html($feedback->other_courses) . '</p>';
+            }
+            if ($feedback->improvements) {
+                echo '<p><strong>Poboljšanja:</strong> ' . esc_html($feedback->improvements) . '</p>';
+            }
+            if ($feedback->additional_comments) {
+                echo '<p><strong>Dodatni komentari:</strong> ' . esc_html($feedback->additional_comments) . '</p>';
+            }
+        }
+
+        wp_die();
     }
 }
