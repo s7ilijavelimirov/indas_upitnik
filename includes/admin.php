@@ -64,8 +64,17 @@ class Survey_Admin
 
             <div class="dashboard-widgets-wrap">
                 <div class="metabox-holder">
+                    <?php if ($feedback_count > 0): ?>
+                        <div class="postbox">
+                            <h2>Statistike upitnika</h2>
+                            <div class="inside">
+                                <?php Survey_Statistics::render_statistics_widget(); ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="postbox">
-                        <h2>Statistike</h2>
+                        <h2>Osnovne statistike</h2>
                         <div class="inside">
                             <p><strong>Ukupno prijava:</strong> <?php echo $participants_count; ?></p>
                             <p><strong>Ukupno upitnika:</strong> <?php echo $feedback_count; ?></p>
