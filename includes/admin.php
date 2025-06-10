@@ -12,6 +12,29 @@ class Survey_Admin
     {
         add_action('admin_menu', array(__CLASS__, 'add_admin_menu'));
         add_action('admin_init', array(__CLASS__, 'handle_csv_export'));
+        add_action('admin_init', array(__CLASS__, 'register_settings'));
+        add_action('wp_ajax_save_survey_email', array(__CLASS__, 'save_survey_email'));
+    }
+
+    public static function register_settings()
+    {
+        register_setting('survey_settings', 'survey_notification_email');
+    }
+
+    public static function save_survey_email()
+    {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Nemate dozvolu za ovu akciju');
+            return;
+        }
+
+        if (!isset($_POST['email']) || !is_email($_POST['email'])) {
+            wp_send_json_error('Neispravan email');
+            return;
+        }
+
+        update_option('survey_notification_email', sanitize_email($_POST['email']));
+        wp_send_json_success('Email uspešno sačuvan');
     }
 
     public static function add_admin_menu()
@@ -58,6 +81,7 @@ class Survey_Admin
     {
         $participants_count = Survey_Database::get_participants_count();
         $feedback_count = Survey_Database::get_feedback_count();
+        $notification_email = get_option('survey_notification_email', get_option('admin_email'));
 ?>
         <div class="wrap">
             <h1>Pregled upitnika</h1>
@@ -78,6 +102,7 @@ class Survey_Admin
                         <div class="inside">
                             <p><strong>Ukupno prijava:</strong> <?php echo $participants_count; ?></p>
                             <p><strong>Ukupno upitnika:</strong> <?php echo $feedback_count; ?></p>
+                            <p><strong>Email za obaveštenja:</strong> <?php echo $notification_email; ?></p>
                         </div>
                     </div>
 
@@ -271,7 +296,7 @@ class Survey_Admin
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             jQuery(document).ready(function($) {
                 $('.view-details').on('click', function() {
                     var id = $(this).data('id');
@@ -293,7 +318,7 @@ class Survey_Admin
                     $('#feedback-modal').hide();
                 });
             });
-        </script>
+        </script> -->
 
         <style>
             #feedback-modal {
@@ -348,9 +373,42 @@ class Survey_Admin
     public static function qr_codes_page()
     {
         $base_url = home_url();
+        $notification_email = get_option('survey_notification_email', get_option('admin_email'));
     ?>
         <div class="wrap">
             <h1>QR Kodovi za upitnik</h1>
+
+            <!-- Email Settings Section -->
+            <div class="email-settings-section">
+                <h2>Podešavanja email obaveštenja</h2>
+                <div class="postbox">
+                    <div class="inside">
+                        <p>Unesite email adresu na koju će stizati obaveštenja o novim prijavama i upitnicima:</p>
+                        <form id="email-settings-form">
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row">
+                                        <label for="notification_email">Email za obaveštenja:</label>
+                                    </th>
+                                    <td>
+                                        <input type="email"
+                                            id="notification_email"
+                                            name="notification_email"
+                                            value="<?php echo esc_attr($notification_email); ?>"
+                                            class="regular-text"
+                                            required />
+                                        <button type="submit" class="button button-primary">Sačuvaj email</button>
+                                        <span class="spinner"></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                        <div id="email-message" style="margin-top: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin: 30px 0;">
 
             <div class="qr-codes-container">
                 <div class="qr-code-section">
@@ -427,7 +485,62 @@ class Survey_Admin
             </div>
         </div>
 
+        <script>
+            jQuery(document).ready(function($) {
+                $('#email-settings-form').on('submit', function(e) {
+                    e.preventDefault();
+
+                    var $form = $(this);
+                    var $spinner = $form.find('.spinner');
+                    var $message = $('#email-message');
+                    var email = $('#notification_email').val();
+
+                    $spinner.addClass('is-active');
+                    $message.removeClass('notice-success notice-error').html('');
+
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'save_survey_email',
+                            email: email
+                        },
+                        success: function(response) {
+                            $spinner.removeClass('is-active');
+
+                            if (response.success) {
+                                $message.html('<div class="notice notice-success"><p>' + response.data + '</p></div>');
+                            } else {
+                                $message.html('<div class="notice notice-error"><p>' + response.data + '</p></div>');
+                            }
+                        },
+                        error: function() {
+                            $spinner.removeClass('is-active');
+                            $message.html('<div class="notice notice-error"><p>Greška prilikom čuvanja email adrese.</p></div>');
+                        }
+                    });
+                });
+            });
+        </script>
+
         <style>
+            .email-settings-section {
+                margin-bottom: 30px;
+            }
+
+            .email-settings-section .postbox {
+                max-width: 600px;
+            }
+
+            .email-settings-section .inside {
+                padding: 15px;
+            }
+
+            .spinner {
+                float: none;
+                margin: 0 10px;
+            }
+
             .qr-codes-container {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

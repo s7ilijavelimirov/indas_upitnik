@@ -452,8 +452,9 @@ class Survey_Shortcodes
         $result = Survey_Database::save_participant($data);
 
         if ($result) {
-            // Pošalji detaljni email
-            $admin_email = get_option('admin_email');
+            // Koristimo custom email ako je postavljen, inače fallback na admin_email
+            $notification_email = get_option('survey_notification_email', get_option('admin_email'));
+
             $subject = 'Nova registracija polaznika kursa';
             $message = "Nova registracija polaznika:\n\n";
             $message .= "Ime i prezime: " . sanitize_text_field($data['participant_name']) . "\n";
@@ -466,7 +467,7 @@ class Survey_Shortcodes
             $message .= "Jezik: " . sanitize_text_field($data['language']) . "\n";
             $message .= "Datum/vreme: " . date('d.m.Y H:i:s') . "\n";
 
-            wp_mail($admin_email, $subject, $message);
+            wp_mail($notification_email, $subject, $message);
 
             wp_send_json_success('Uspešno ste se registrovali!');
         } else {
@@ -495,8 +496,9 @@ class Survey_Shortcodes
         $result = Survey_Database::save_feedback($data);
 
         if ($result) {
-            // Pošalji detaljni email
-            $admin_email = get_option('admin_email');
+            // Koristimo custom email ako je postavljen, inače fallback na admin_email
+            $notification_email = get_option('survey_notification_email', get_option('admin_email'));
+
             $subject = 'Novi feedback o kursu';
             $message = "Novi feedback o kursu:\n\n";
             $message .= "Tip feedback-a: " . sanitize_text_field($data['feedback_type']) . "\n";
@@ -536,7 +538,7 @@ class Survey_Shortcodes
 
             $message .= "\nDatum/vreme: " . date('d.m.Y H:i:s') . "\n";
 
-            wp_mail($admin_email, $subject, $message);
+            wp_mail($notification_email, $subject, $message);
 
             wp_send_json_success('Hvala na povratnim informacijama!');
         } else {
