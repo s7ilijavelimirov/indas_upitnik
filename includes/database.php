@@ -14,7 +14,7 @@ class Survey_Database
 
         $charset_collate = $wpdb->get_charset_collate();
 
-        // Tabela za podatke polaznika
+        // Tabela za podatke polaznika - dodano user_hash polje
         $table_participants = $wpdb->prefix . 'course_participants';
         $sql1 = "CREATE TABLE $table_participants (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -25,12 +25,14 @@ class Survey_Database
             phone varchar(50) NOT NULL,
             mobile varchar(50) NOT NULL,
             email varchar(100) NOT NULL,
+            user_hash varchar(32) NOT NULL,
             submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
             language varchar(2) DEFAULT 'sr',
-            PRIMARY KEY (id)
+            PRIMARY KEY (id),
+            INDEX idx_user_hash (user_hash)
         ) $charset_collate;";
 
-        // Tabela za feedback upitnik
+        // Tabela za feedback upitnik - dodano user_hash polje
         $table_feedback = $wpdb->prefix . 'course_feedback';
         $sql2 = "CREATE TABLE $table_feedback (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -47,10 +49,13 @@ class Survey_Database
             other_courses text,
             improvements text,
             additional_comments text,
+            user_hash varchar(32) NOT NULL,
             submitted_at datetime DEFAULT CURRENT_TIMESTAMP,
             language varchar(2) DEFAULT 'sr',
             feedback_type varchar(20) DEFAULT 'standard',
-            PRIMARY KEY (id)
+            PRIMARY KEY (id),
+            INDEX idx_user_hash (user_hash),
+            INDEX idx_feedback_type (feedback_type)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -74,9 +79,10 @@ class Survey_Database
                 'phone' => sanitize_text_field($data['phone']),
                 'mobile' => sanitize_text_field($data['mobile']),
                 'email' => sanitize_email($data['email']),
+                'user_hash' => sanitize_text_field($data['user_hash']),
                 'language' => sanitize_text_field($data['language'])
             ),
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
         );
 
         return $result;
@@ -106,10 +112,11 @@ class Survey_Database
                 'other_courses' => sanitize_textarea_field($data['other_courses']),
                 'improvements' => sanitize_textarea_field($data['improvements']),
                 'additional_comments' => sanitize_textarea_field($data['additional_comments']),
+                'user_hash' => sanitize_text_field($data['user_hash']),
                 'language' => sanitize_text_field($data['language']),
                 'feedback_type' => sanitize_text_field($feedback_type)
             ),
-            array('%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+            array('%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
         );
 
         return $result;
@@ -171,5 +178,28 @@ class Survey_Database
         return $wpdb->get_row(
             $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id)
         );
+    }
+
+    // Dodajemo funkciju za ažuriranje postojećih tabela
+    public static function update_tables_if_needed()
+    {
+        global $wpdb;
+
+        $participants_table = $wpdb->prefix . 'course_participants';
+        $feedback_table = $wpdb->prefix . 'course_feedback';
+
+        // Proveravamo da li postoji user_hash kolona u participants tabeli
+        $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $participants_table LIKE 'user_hash'");
+        if (empty($column_exists)) {
+            $wpdb->query("ALTER TABLE $participants_table ADD COLUMN user_hash varchar(32) NOT NULL DEFAULT ''");
+            $wpdb->query("ALTER TABLE $participants_table ADD INDEX idx_user_hash (user_hash)");
+        }
+
+        // Proveravamo da li postoji user_hash kolona u feedback tabeli
+        $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $feedback_table LIKE 'user_hash'");
+        if (empty($column_exists)) {
+            $wpdb->query("ALTER TABLE $feedback_table ADD COLUMN user_hash varchar(32) NOT NULL DEFAULT ''");
+            $wpdb->query("ALTER TABLE $feedback_table ADD INDEX idx_user_hash (user_hash)");
+        }
     }
 }

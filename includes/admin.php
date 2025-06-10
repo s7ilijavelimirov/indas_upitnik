@@ -37,8 +37,8 @@ class Survey_Admin
 
         add_submenu_page(
             'survey-dashboard',
-            'Feedback',
-            'Feedback',
+            'Upitnici',
+            'Upitnici',
             'manage_options',
             'survey-feedback',
             array(__CLASS__, 'feedback_page')

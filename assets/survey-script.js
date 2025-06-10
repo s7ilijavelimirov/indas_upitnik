@@ -1,112 +1,7 @@
 jQuery(document).ready(function ($) {
 
-    // Handling registration form submission
-    $('#registration-form').on('submit', function (e) {
-        e.preventDefault();
-
-        var $form = $(this);
-        var $submitBtn = $form.find('button[type="submit"]');
-        var $message = $form.find('.form-message');
-
-        // Disable submit button and show loading
-        $submitBtn.prop('disabled', true).text('Šalje se...');
-        $form.addClass('loading');
-        $message.html('');
-
-        var formData = new FormData(this);
-        formData.append('action', 'submit_registration');
-
-        $.ajax({
-            url: survey_ajax.ajax_url,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                $form.removeClass('loading');
-                $submitBtn.prop('disabled', false);
-
-                if (response.success) {
-                    $message.html('<div class="success-message">' + response.data + '</div>');
-                    $form[0].reset();
-                    $submitBtn.text('Poslano uspešno!');
-
-                    // Reset button text after 3 seconds
-                    setTimeout(function () {
-                        $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
-                    }, 3000);
-
-                    // Scroll to success message
-                    scrollToMessage($message);
-
-                } else {
-                    $message.html('<div class="error-message">' + response.data + '</div>');
-                    $submitBtn.text('Pošalji');
-                    scrollToMessage($message);
-                }
-            },
-            error: function () {
-                $form.removeClass('loading');
-                $submitBtn.prop('disabled', false).text('Pošalji');
-                $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
-                scrollToMessage($message);
-            }
-        });
-    });
-
-    // Handling feedback form submission
-    $('#feedback-form').on('submit', function (e) {
-        e.preventDefault();
-
-        var $form = $(this);
-        var $submitBtn = $form.find('button[type="submit"]');
-        var $message = $form.find('.form-message');
-
-        // Disable submit button and show loading
-        $submitBtn.prop('disabled', true).text('Šalje se...');
-        $form.addClass('loading');
-        $message.html('');
-
-        var formData = new FormData(this);
-        formData.append('action', 'submit_feedback');
-
-        $.ajax({
-            url: survey_ajax.ajax_url,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                $form.removeClass('loading');
-                $submitBtn.prop('disabled', false);
-
-                if (response.success) {
-                    $message.html('<div class="success-message">' + response.data + '</div>');
-                    $form[0].reset();
-                    $submitBtn.text('Hvala na feedback-u!');
-
-                    // Reset button text after 3 seconds
-                    setTimeout(function () {
-                        $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
-                    }, 3000);
-
-                    // Scroll to success message
-                    scrollToMessage($message);
-
-                } else {
-                    $message.html('<div class="error-message">' + response.data + '</div>');
-                    $submitBtn.text('Pošalji');
-                    scrollToMessage($message);
-                }
-            },
-            error: function () {
-                $form.removeClass('loading');
-                $submitBtn.prop('disabled', false).text('Pošalji');
-                $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
-                scrollToMessage($message);
-            }
-        });
-    });
+    // UKLONILI SMO dupli handling jer se sada radi samo kroz survey-script.js
+    // a ne i inline u shortcode-u
 
     // Store original button text
     $('button[type="submit"]').each(function () {
@@ -195,17 +90,16 @@ jQuery(document).ready(function ($) {
     function updateProgressIndicator($form) {
         var totalFields = $form.find('input[required], textarea[required], select[required]').length;
         var filledFields = 0;
+        var countedRadioGroups = [];
 
         $form.find('input[required], textarea[required], select[required]').each(function () {
             if ($(this).attr('type') === 'radio') {
                 var name = $(this).attr('name');
-                if ($form.find('input[name="' + name + '"]:checked').length > 0) {
-                    filledFields++;
-                }
-                // Don't count each radio button individually
-                $form.find('input[name="' + name + '"]').not(this).attr('data-counted', 'true');
-                if ($(this).attr('data-counted') === 'true') {
-                    return;
+                if (countedRadioGroups.indexOf(name) === -1) {
+                    if ($form.find('input[name="' + name + '"]:checked').length > 0) {
+                        filledFields++;
+                    }
+                    countedRadioGroups.push(name);
                 }
             } else if ($(this).val().trim() !== '') {
                 filledFields++;
@@ -239,28 +133,102 @@ jQuery(document).ready(function ($) {
     // Prevent double submission
     var submittedForms = [];
 
-    $('form').on('submit', function () {
+    $('form').on('submit', function (e) {
+        e.preventDefault();
+
         var formId = $(this).attr('id');
         if (submittedForms.includes(formId)) {
             return false;
         }
         submittedForms.push(formId);
 
-        // Remove from array after 5 seconds to allow resubmission if needed
-        setTimeout(function () {
-            var index = submittedForms.indexOf(formId);
-            if (index > -1) {
-                submittedForms.splice(index, 1);
+        var $form = $(this);
+        var $submitBtn = $form.find('button[type="submit"]');
+        var $message = $form.find('.form-message');
+
+        // Disable submit button and show loading
+        $submitBtn.prop('disabled', true);
+        $form.addClass('loading');
+        $message.html('');
+
+        var formData = new FormData(this);
+
+        // Determine which action to use
+        var action = '';
+        if (formId === 'registration-form') {
+            action = 'submit_registration';
+            $submitBtn.text('Šalje se...');
+        } else if (formId === 'feedback-form') {
+            action = 'submit_feedback';
+            $submitBtn.text('Šalje se...');
+        }
+
+        formData.append('action', action);
+
+        $.ajax({
+            url: survey_ajax.ajax_url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $form.removeClass('loading');
+                $submitBtn.prop('disabled', false);
+
+                if (response.success) {
+                    $message.html('<div class="success-message">' + response.data + '</div>');
+                    $form[0].reset();
+
+                    if (formId === 'registration-form') {
+                        $submitBtn.text('Registracija uspešna!');
+                    } else {
+                        $submitBtn.text('Hvala na feedback-u!');
+                    }
+
+                    // Reset button text after 3 seconds
+                    setTimeout(function () {
+                        $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
+                    }, 3000);
+
+                    // Scroll to success message
+                    scrollToMessage($message);
+
+                    // Hide form after successful submission
+                    setTimeout(function () {
+                        $form.fadeOut(1000);
+                    }, 2000);
+
+                } else {
+                    $message.html('<div class="error-message">' + response.data + '</div>');
+                    $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
+                    scrollToMessage($message);
+                }
+            },
+            error: function () {
+                $form.removeClass('loading');
+                $submitBtn.prop('disabled', false);
+                $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
+                $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
+                scrollToMessage($message);
+            },
+            complete: function () {
+                // Remove from array after 5 seconds to allow resubmission if needed
+                setTimeout(function () {
+                    var index = submittedForms.indexOf(formId);
+                    if (index > -1) {
+                        submittedForms.splice(index, 1);
+                    }
+                }, 5000);
             }
-        }, 5000);
+        });
     });
 
     // Handle rating group clicks better
-    $('.rating-group label').on('click', function(e) {
+    $('.rating-group label').on('click', function (e) {
         var $input = $(this).find('input[type="radio"]');
         if ($input.length) {
             $input.prop('checked', true).trigger('change');
-            
+
             // Visual feedback
             $(this).closest('.rating-group').find('label').removeClass('selected');
             $(this).addClass('selected');
@@ -268,9 +236,9 @@ jQuery(document).ready(function ($) {
     });
 
     // Better form reset handling
-    $('form').on('reset', function() {
+    $('form').on('reset', function () {
         var $form = $(this);
-        setTimeout(function() {
+        setTimeout(function () {
             $form.find('.error').removeClass('error');
             $form.find('.error-text').remove();
             $form.find('.selected').removeClass('selected');
@@ -279,9 +247,9 @@ jQuery(document).ready(function ($) {
     });
 
     // Form field focus improvements
-    $('input, textarea').on('focus', function() {
+    $('input, textarea').on('focus', function () {
         $(this).closest('.form-row').addClass('focused');
-    }).on('blur', function() {
+    }).on('blur', function () {
         $(this).closest('.form-row').removeClass('focused');
     });
 

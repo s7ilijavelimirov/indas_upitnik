@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Dual Survey System
  * Description: Sistem za dva tipa upitnika - registracija polaznika i feedback upitnik
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Your Name
  */
 
@@ -23,6 +23,9 @@ class DualSurveySystem
         add_action('plugins_loaded', array($this, 'init'));
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+
+        // Hook za ažuriranje baze podataka ako je potrebno
+        add_action('admin_init', array($this, 'maybe_update_database'));
     }
 
     public function init()
@@ -53,6 +56,9 @@ class DualSurveySystem
 
         // Flush rewrite rules
         flush_rewrite_rules();
+
+        // Set flag for database update check
+        update_option('survey_plugin_version', '1.0.1');
     }
 
     public function deactivate()
@@ -61,11 +67,24 @@ class DualSurveySystem
         flush_rewrite_rules();
     }
 
+    public function maybe_update_database()
+    {
+        $current_version = get_option('survey_plugin_version', '1.0.0');
+
+        if (version_compare($current_version, '1.0.1', '<')) {
+            require_once SURVEY_PLUGIN_PATH . 'includes/database.php';
+            if (class_exists('Survey_Database')) {
+                Survey_Database::update_tables_if_needed();
+                update_option('survey_plugin_version', '1.0.1');
+            }
+        }
+    }
+
     public function enqueue_frontend_assets()
     {
         wp_enqueue_script('jquery');
-        wp_enqueue_style('survey-style', SURVEY_PLUGIN_URL . 'assets/survey-style.css', array(), '1.0.0');
-        wp_enqueue_script('survey-script', SURVEY_PLUGIN_URL . 'assets/survey-script.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_style('survey-style', SURVEY_PLUGIN_URL . 'assets/survey-style.css', array(), '1.0.1');
+        wp_enqueue_script('survey-script', SURVEY_PLUGIN_URL . 'assets/survey-script.js', array('jquery'), '1.0.1', true);
 
         // Localize script for AJAX
         wp_localize_script('survey-script', 'survey_ajax', array(
@@ -78,8 +97,8 @@ class DualSurveySystem
     {
         $screen = get_current_screen();
         if (strpos($screen->id, 'survey') !== false) {
-            wp_enqueue_style('survey-admin-style', SURVEY_PLUGIN_URL . 'assets/admin-style.css', array(), '1.0.0');
-            wp_enqueue_script('survey-admin-script', SURVEY_PLUGIN_URL . 'assets/admin-script.js', array('jquery'), '1.0.0', true);
+            wp_enqueue_style('survey-admin-style', SURVEY_PLUGIN_URL . 'assets/admin-style.css', array(), '1.0.1');
+            wp_enqueue_script('survey-admin-script', SURVEY_PLUGIN_URL . 'assets/admin-script.js', array('jquery'), '1.0.1', true);
         }
     }
 }
