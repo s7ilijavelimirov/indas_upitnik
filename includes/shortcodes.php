@@ -40,7 +40,10 @@ class Survey_Shortcodes
                 'phone' => 'Telefon:',
                 'mobile' => 'Mobilni:',
                 'email' => 'E-mail:',
-                'submit' => 'Pošalji'
+                'submit' => 'Pošalji',
+                'field_required' => 'Ovo polje je obavezno, molimo vas popunite',
+                'choose_option' => 'Molimo izaberite jednu opciju',
+                'fill_required_fields' => 'Molimo popunite sva obavezna polja!'
             ),
             'en' => array(
                 'title' => 'Course Participant Registration',
@@ -51,7 +54,10 @@ class Survey_Shortcodes
                 'phone' => 'Phone:',
                 'mobile' => 'Mobile:',
                 'email' => 'E-mail:',
-                'submit' => 'Submit'
+                'submit' => 'Submit',
+                'field_required' => 'This field is required, please fill it out',
+                'choose_option' => 'Please choose one option',
+                'fill_required_fields' => 'Please fill out all required fields!'
             )
         );
 
@@ -73,7 +79,10 @@ class Survey_Shortcodes
                     </div>
                 </div>
             <?php else: ?>
-                <form id="registration-form" method="post">
+                <form id="registration-form" method="post"
+                    data-field-required="<?php echo esc_attr($t['field_required']); ?>"
+                    data-choose-option="<?php echo esc_attr($t['choose_option']); ?>"
+                    data-fill-required="<?php echo esc_attr($t['fill_required_fields']); ?>">
                     <?php wp_nonce_field('registration_nonce', 'registration_nonce'); ?>
                     <input type="hidden" name="language" value="<?php echo $lang; ?>">
                     <input type="hidden" name="user_hash" value="<?php echo $user_hash; ?>">
@@ -155,7 +164,10 @@ class Survey_Shortcodes
                 'additional_comments' => 'Dodao bih:',
                 'yes' => 'Da',
                 'no' => 'Ne',
-                'submit' => 'Pošalji'
+                'submit' => 'Pošalji',
+                'field_required' => 'Ovo polje je obavezno, molimo vas popunite',
+                'choose_option' => 'Molimo izaberite jednu opciju',
+                'fill_required_fields' => 'Molimo popunite sva obavezna polja!'
             ),
             'en' => array(
                 'title' => 'Course Participant Questionnaire',
@@ -177,7 +189,10 @@ class Survey_Shortcodes
                 'additional_comments' => 'I would add:',
                 'yes' => 'Yes',
                 'no' => 'No',
-                'submit' => 'Submit'
+                'submit' => 'Submit',
+                'field_required' => 'This field is required, please fill it out',
+                'choose_option' => 'Please choose one option',
+                'fill_required_fields' => 'Please fill out all required fields!'
             )
         );
 
@@ -261,7 +276,10 @@ class Survey_Shortcodes
                     </div>
                 </div>
             <?php else: ?>
-                <form id="feedback-form" method="post">
+                <form id="feedback-form" method="post"
+                    data-field-required="<?php echo esc_attr($t['field_required']); ?>"
+                    data-choose-option="<?php echo esc_attr($t['choose_option']); ?>"
+                    data-fill-required="<?php echo esc_attr($t['fill_required_fields']); ?>">
                     <?php wp_nonce_field('feedback_nonce', 'feedback_nonce'); ?>
                     <input type="hidden" name="language" value="<?php echo $lang; ?>">
                     <input type="hidden" name="feedback_type" value="<?php echo $type; ?>">
@@ -405,11 +423,241 @@ class Survey_Shortcodes
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         return md5($ip . $user_agent); // Jedinstveni hash per IP/browser (bez datuma!)
     }
+    private static function generate_registration_email_template($data)
+    {
+        $html = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: #EE3524; color: white; padding: 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; }
+            .content { padding: 30px; }
+            .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            .info-table td { padding: 12px; border-bottom: 1px solid #eee; }
+            .info-table .label { font-weight: bold; color: #333; width: 30%; background: #f9f9f9; }
+            .info-table .value { color: #666; }
+            .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+            .badge { background: #EE3524; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>📝 Nova registracija polaznika</h1>
+                <p style="margin: 5px 0 0 0;">Indas Survey System</p>
+            </div>
+            
+            <div class="content">
+                <p>Zdravo!</p>
+                <p>Upravo je stigla <strong>nova registracija polaznika kursa</strong>. Evo detalja:</p>
+                
+                <table class="info-table">
+                    <tr>
+                        <td class="label">👤 Ime i prezime:</td>
+                        <td class="value">' . esc_html($data['participant_name']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">🏢 Kompanija:</td>
+                        <td class="value">' . esc_html($data['company']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">📍 Adresa:</td>
+                        <td class="value">' . esc_html($data['address']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">💼 Radno mesto:</td>
+                        <td class="value">' . esc_html($data['position']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">📞 Telefon:</td>
+                        <td class="value">' . esc_html($data['phone']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">📱 Mobilni:</td>
+                        <td class="value">' . esc_html($data['mobile']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">✉️ Email:</td>
+                        <td class="value">' . esc_html($data['email']) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">🌐 Jezik:</td>
+                        <td class="value"><span class="badge">' . strtoupper($data['language']) . '</span></td>
+                    </tr>
+                </table>
+                
+                <p style="margin-top: 30px;">
+                    <a href="' . admin_url('admin.php?page=survey-registrations') . '" 
+                       style="background: #EE3524; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                       📊 Pogledaj sve registracije
+                    </a>
+                </p>
+            </div>
+            
+            <div class="footer">
+                Vreme registracije: ' . date('d.m.Y H:i:s') . '<br>
+                Indas Survey System - Automated Email
+            </div>
+        </div>
+    </body>
+    </html>';
 
+        return $html;
+    }
+    private static function generate_feedback_email_template($data)
+    {
+        $rating_stars = function ($rating) {
+            $stars = '';
+            for ($i = 1; $i <= 5; $i++) {
+                $stars .= $i <= $rating ? '⭐' : '☆';
+            }
+            return $stars . " ($rating/5)";
+        };
+
+        $html = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: #EE3524; color: white; padding: 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 24px; }
+            .content { padding: 30px; }
+            .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            .info-table td { padding: 12px; border-bottom: 1px solid #eee; }
+            .info-table .label { font-weight: bold; color: #333; width: 40%; background: #f9f9f9; }
+            .info-table .value { color: #666; }
+            .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+            .badge { background: #EE3524; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+            .comments { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #EE3524; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>📋 Novi feedback o kursu</h1>
+                <p style="margin: 5px 0 0 0;">Indas Survey System</p>
+            </div>
+            
+            <div class="content">
+                <p>Upravo je stigao <strong>novi feedback o kursu</strong>!</p>
+                
+                <table class="info-table">
+                    <tr>
+                        <td class="label">📝 Tip feedback-a:</td>
+                        <td class="value"><span class="badge">' . ucfirst(sanitize_text_field($data['feedback_type'])) . '</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">🌐 Jezik:</td>
+                        <td class="value"><span class="badge">' . strtoupper(sanitize_text_field($data['language'])) . '</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">✅ Očekivanja ispunjena:</td>
+                        <td class="value">' . (sanitize_text_field($data['expectations_met']) === 'da' ? '✅ DA' : '❌ NE') . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">📊 Nivo očekivanja:</td>
+                        <td class="value">' . $rating_stars(intval($data['expectations_level'])) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">🎓 Kvalitet predavanja:</td>
+                        <td class="value">' . $rating_stars(intval($data['lecture_quality'])) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">👨‍🏫 Kvalitet predavača:</td>
+                        <td class="value">' . $rating_stars(intval($data['lecturer_quality'])) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">💼 Primenjivost u praksi:</td>
+                        <td class="value">' . $rating_stars(intval($data['practical_application'])) . '</td>
+                    </tr>
+                    <tr>
+                        <td class="label">📚 Literatura:</td>
+                        <td class="value">' . $rating_stars(intval($data['literature'])) . '</td>
+                    </tr>';
+
+        if (isset($data['premises']) && $data['premises']) {
+            $html .= '<tr>
+                        <td class="label">🏢 Prostorije:</td>
+                        <td class="value">' . $rating_stars(intval($data['premises'])) . '</td>
+                    </tr>';
+        }
+
+        if (isset($data['food']) && $data['food']) {
+            $html .= '<tr>
+                        <td class="label">🍽️ Ishrana:</td>
+                        <td class="value">' . $rating_stars(intval($data['food'])) . '</td>
+                    </tr>';
+        }
+
+        if (isset($data['cooperation']) && $data['cooperation']) {
+            $html .= '<tr>
+                        <td class="label">🤝 Saradnja:</td>
+                        <td class="value">' . $rating_stars(intval($data['cooperation'])) . '</td>
+                    </tr>';
+        }
+
+        $html .= '</table>';
+
+        // Comments section
+        $has_comments = false;
+        $comments_html = '<h3 style="color: #EE3524; margin-top: 30px;">💬 Komentari:</h3>';
+
+        if (!empty($data['advanced_step7'])) {
+            $has_comments = true;
+            $comments_html .= '<div class="comments"><strong>Napredni STEP7 kursevi:</strong><br>' . esc_html(sanitize_textarea_field($data['advanced_step7'])) . '</div>';
+        }
+
+        if (!empty($data['other_courses'])) {
+            $has_comments = true;
+            $comments_html .= '<div class="comments"><strong>Drugi kursevi:</strong><br>' . esc_html(sanitize_textarea_field($data['other_courses'])) . '</div>';
+        }
+
+        if (!empty($data['improvements'])) {
+            $has_comments = true;
+            $comments_html .= '<div class="comments"><strong>Predlozi za poboljšanje:</strong><br>' . esc_html(sanitize_textarea_field($data['improvements'])) . '</div>';
+        }
+
+        if (!empty($data['additional_comments'])) {
+            $has_comments = true;
+            $comments_html .= '<div class="comments"><strong>Dodatni komentari:</strong><br>' . esc_html(sanitize_textarea_field($data['additional_comments'])) . '</div>';
+        }
+
+        if ($has_comments) {
+            $html .= $comments_html;
+        }
+
+        $html .= '
+                <p style="margin-top: 30px;">
+                    <a href="' . admin_url('admin.php?page=survey-feedback') . '" 
+                       style="background: #EE3524; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                       📈 Pogledaj sve feedback-ove
+                    </a>
+                </p>
+            </div>
+            
+            <div class="footer">
+                Vreme slanja: ' . date('d.m.Y H:i:s') . '<br>
+                Indas Survey System - Automated Email
+            </div>
+        </div>
+    </body>
+    </html>';
+
+        return $html;
+    }
     private static function check_if_already_submitted($type, $user_hash)
     {
         global $wpdb;
-
+        if (get_option('survey_test_mode', false)) {
+            return false;
+        }
         if ($type === 'registration') {
             $table_name = $wpdb->prefix . 'course_participants';
             $count = $wpdb->get_var(
@@ -456,18 +704,10 @@ class Survey_Shortcodes
             $notification_email = get_option('survey_notification_email', get_option('admin_email'));
 
             $subject = 'Nova registracija polaznika kursa';
-            $message = "Nova registracija polaznika:\n\n";
-            $message .= "Ime i prezime: " . sanitize_text_field($data['participant_name']) . "\n";
-            $message .= "Kompanija: " . sanitize_text_field($data['company']) . "\n";
-            $message .= "Adresa: " . sanitize_text_field($data['address']) . "\n";
-            $message .= "Radno mesto: " . sanitize_text_field($data['position']) . "\n";
-            $message .= "Telefon: " . sanitize_text_field($data['phone']) . "\n";
-            $message .= "Mobilni: " . sanitize_text_field($data['mobile']) . "\n";
-            $message .= "Email: " . sanitize_email($data['email']) . "\n";
-            $message .= "Jezik: " . sanitize_text_field($data['language']) . "\n";
-            $message .= "Datum/vreme: " . date('d.m.Y H:i:s') . "\n";
+            $message = self::generate_registration_email_template($data);
+            $headers = array('Content-Type: text/html; charset=UTF-8');
 
-            wp_mail($notification_email, $subject, $message);
+            wp_mail($notification_email, $subject, $message, $headers);
 
             wp_send_json_success('Uspešno ste se registrovali!');
         } else {
@@ -500,45 +740,10 @@ class Survey_Shortcodes
             $notification_email = get_option('survey_notification_email', get_option('admin_email'));
 
             $subject = 'Novi feedback o kursu';
-            $message = "Novi feedback o kursu:\n\n";
-            $message .= "Tip feedback-a: " . sanitize_text_field($data['feedback_type']) . "\n";
-            $message .= "Jezik: " . sanitize_text_field($data['language']) . "\n\n";
+            $message = self::generate_feedback_email_template($data);
+            $headers = array('Content-Type: text/html; charset=UTF-8');
 
-            $message .= "OCENE:\n";
-            $message .= "Očekivanja ispunjena: " . sanitize_text_field($data['expectations_met']) . "\n";
-            $message .= "Nivo očekivanja: " . intval($data['expectations_level']) . "/5\n";
-            $message .= "Kvalitet predavanja: " . intval($data['lecture_quality']) . "/5\n";
-            $message .= "Kvalitet predavača: " . intval($data['lecturer_quality']) . "/5\n";
-            $message .= "Primenjivost u praksi: " . intval($data['practical_application']) . "/5\n";
-            $message .= "Literatura: " . intval($data['literature']) . "/5\n";
-
-            if (isset($data['premises']) && $data['premises']) {
-                $message .= "Prostorije: " . intval($data['premises']) . "/5\n";
-            }
-            if (isset($data['food']) && $data['food']) {
-                $message .= "Ishrana: " . intval($data['food']) . "/5\n";
-            }
-            if (isset($data['cooperation']) && $data['cooperation']) {
-                $message .= "Saradnja: " . intval($data['cooperation']) . "/5\n";
-            }
-
-            $message .= "\nKOMENTARI:\n";
-            if (!empty($data['advanced_step7'])) {
-                $message .= "Napredni STEP7 kursevi: " . sanitize_textarea_field($data['advanced_step7']) . "\n";
-            }
-            if (!empty($data['other_courses'])) {
-                $message .= "Drugi kursevi: " . sanitize_textarea_field($data['other_courses']) . "\n";
-            }
-            if (!empty($data['improvements'])) {
-                $message .= "Predlozi za poboljšanje: " . sanitize_textarea_field($data['improvements']) . "\n";
-            }
-            if (!empty($data['additional_comments'])) {
-                $message .= "Dodatni komentari: " . sanitize_textarea_field($data['additional_comments']) . "\n";
-            }
-
-            $message .= "\nDatum/vreme: " . date('d.m.Y H:i:s') . "\n";
-
-            wp_mail($notification_email, $subject, $message);
+            wp_mail($notification_email, $subject, $message, $headers);
 
             wp_send_json_success('Hvala na povratnim informacijama!');
         } else {

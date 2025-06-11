@@ -14,13 +14,24 @@ class Survey_Admin
         add_action('admin_init', array(__CLASS__, 'handle_csv_export'));
         add_action('admin_init', array(__CLASS__, 'register_settings'));
         add_action('wp_ajax_save_survey_email', array(__CLASS__, 'save_survey_email'));
+        add_action('admin_init', array(__CLASS__, 'handle_pdf_download'));
+        add_action('admin_init', array(__CLASS__, 'handle_test_mode'));
     }
 
     public static function register_settings()
     {
         register_setting('survey_settings', 'survey_notification_email');
     }
-
+    public static function handle_test_mode()
+    {
+        if (isset($_POST['save_test_mode'])) {
+            $test_mode = isset($_POST['survey_test_mode']) ? 1 : 0;
+            update_option('survey_test_mode', $test_mode);
+            add_action('admin_notices', function () {
+                echo '<div class="notice notice-success"><p>Test mode settings saved!</p></div>';
+            });
+        }
+    }
     public static function save_survey_email()
     {
         if (!current_user_can('manage_options')) {
@@ -36,7 +47,23 @@ class Survey_Admin
         update_option('survey_notification_email', sanitize_email($_POST['email']));
         wp_send_json_success('Email uspešno sačuvan');
     }
+    public static function handle_pdf_download()
+    {
+        if (!isset($_GET['download_pdf'])) {
+            return;
+        }
 
+        if (!current_user_can('manage_options')) {
+            wp_die('Nemate dozvolu za ovu akciju');
+        }
+
+        require_once SURVEY_PLUGIN_PATH . 'includes/pdf-generator.php';
+
+        $qr_type = sanitize_text_field($_GET['qr_type']);
+        $lang = sanitize_text_field($_GET['lang']);
+
+        Survey_PDF_Generator::generate_qr_pdf($qr_type, $lang);
+    }
     public static function add_admin_menu()
     {
         add_menu_page(
@@ -410,6 +437,23 @@ class Survey_Admin
 
             <hr style="margin: 30px 0;">
 
+            <div class="test-mode-section">
+                <h2>Test Mode</h2>
+                <div class="postbox">
+                    <div class="inside">
+                        <form method="post">
+                            <?php $test_mode = get_option('survey_test_mode', false); ?>
+                            <label>
+                                <input type="checkbox" name="survey_test_mode" value="1" <?php checked($test_mode); ?>>
+                                Uključi test mode (dozvoljava više submitova)
+                            </label>
+                            <button type="submit" name="save_test_mode" class="button">Sačuvaj</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin: 30px 0;">
+
             <div class="qr-codes-container">
                 <div class="qr-code-section">
                     <h3>Prijava polaznika - Srpski</h3>
@@ -417,7 +461,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/prijava-sr'); ?>" alt="QR kod prijava SR">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/prijava-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/prijava-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=registration&lang=sr" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
 
                 <div class="qr-code-section">
@@ -426,7 +473,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/prijava-en'); ?>" alt="QR kod prijava EN">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/prijava-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/prijava-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=registration&lang=en" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
 
                 <div class="qr-code-section">
@@ -435,7 +485,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/upitnik-sr'); ?>" alt="QR kod upitnik SR">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=feedback&lang=sr" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
 
                 <div class="qr-code-section">
@@ -444,7 +497,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/upitnik-en'); ?>" alt="QR kod upitnik EN">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=feedback&lang=en" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
 
                 <div class="qr-code-section">
@@ -453,7 +509,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/upitnik-inhouse-sr'); ?>" alt="QR kod upitnik in-house SR">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-inhouse-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-inhouse-sr'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=feedback-inhouse&lang=sr" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
 
                 <div class="qr-code-section">
@@ -462,7 +521,10 @@ class Survey_Admin
                     <div class="qr-code">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?php echo urlencode($base_url . '/upitnik-inhouse-en'); ?>" alt="QR kod upitnik in-house EN">
                     </div>
-                    <p><a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-inhouse-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a></p>
+                    <div class="qr-actions">
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=<?php echo urlencode($base_url . '/upitnik-inhouse-en'); ?>" target="_blank" class="button">Preuzmi veliki QR (500x500)</a>
+                        <a href="?page=survey-qr-codes&download_pdf=1&qr_type=feedback-inhouse&lang=en" target="_blank" class="button button-primary">Štampaj PDF</a>
+                    </div>
                 </div>
             </div>
 

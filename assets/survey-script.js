@@ -1,8 +1,5 @@
 jQuery(document).ready(function ($) {
 
-    // UKLONILI SMO dupli handling jer se sada radi samo kroz survey-script.js
-    // a ne i inline u shortcode-u
-
     // Store original button text
     $('button[type="submit"]').each(function () {
         $(this).data('original-text', $(this).text());
@@ -15,13 +12,16 @@ jQuery(document).ready(function ($) {
         $(this).closest('label').addClass('selected');
     });
 
+    // Radio group interaction enhancement
+    $('.radio-group input[type="radio"]').on('change', function () {
+        var $group = $(this).closest('.radio-group');
+        $group.find('label').removeClass('selected');
+        $(this).closest('label').addClass('selected');
+    });
+
     // Form validation enhancement
     $('input[required], textarea[required]').on('blur', function () {
-        if ($(this).val().trim() === '') {
-            $(this).addClass('error');
-        } else {
-            $(this).removeClass('error');
-        }
+        validateField($(this));
     });
 
     $('input[required], textarea[required]').on('input', function () {
@@ -52,8 +52,11 @@ jQuery(document).ready(function ($) {
         // Remove all non-digit characters for validation
         var cleanPhone = phone.replace(/\D/g, '');
 
+        $(this).siblings('.error-text').remove();
+
         if (cleanPhone.length > 0 && cleanPhone.length < 6) {
             $(this).addClass('error');
+            $(this).after('<span class="error-text">Telefon mora imati najmanje 6 cifara</span>');
         } else {
             $(this).removeClass('error');
         }
@@ -72,6 +75,113 @@ jQuery(document).ready(function ($) {
                 scrollTop: $message.offset().top - 100
             }, 500);
         }
+    }
+
+    // Field validation function
+    function validateField($field) {
+        var isValid = true;
+        var value = $field.val().trim();
+        var $form = $field.closest('form');
+
+        $field.siblings('.error-text').remove();
+        $field.removeClass('error');
+
+        // Required field validation
+        if ($field.prop('required') && value === '') {
+            $field.addClass('error');
+            var errorText = $form.data('field-required') || 'Ovo polje je obavezno, molimo vas popunite';
+            $field.after('<span class="error-text">' + errorText + '</span>');
+            isValid = false;
+        }
+
+        // Email validation
+        if ($field.attr('type') === 'email' && value !== '') {
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                $field.addClass('error');
+                $field.after('<span class="error-text">Molimo unesite ispravnu email adresu</span>');
+                isValid = false;
+            }
+        }
+
+        // Phone validation
+        if ($field.attr('type') === 'tel' && value !== '') {
+            var cleanPhone = value.replace(/\D/g, '');
+            if (cleanPhone.length < 6) {
+                $field.addClass('error');
+                $field.after('<span class="error-text">Telefon mora imati najmanje 6 cifara</span>');
+                isValid = false;
+            }
+        }
+
+        // Name validation
+        if ($field.attr('name') === 'participant_name' && value !== '') {
+            if (value.length < 2) {
+                $field.addClass('error');
+                $field.after('<span class="error-text">Ime mora imati najmanje 2 karaktera</span>');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    // Form validation function
+    function validateForm($form) {
+        var isValid = true;
+        var firstInvalidField = null;
+
+        // Validate all required fields
+        $form.find('input[required], textarea[required]').each(function () {
+            if (!validateField($(this))) {
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = $(this);
+                }
+            }
+        });
+
+        // Validate required radio groups
+        var radioGroups = {};
+        $form.find('input[type="radio"][required]').each(function () {
+            var name = $(this).attr('name');
+            if (!radioGroups[name]) {
+                radioGroups[name] = $(this).closest('.form-row');
+            }
+        });
+
+        $.each(radioGroups, function (name, $row) {
+            if ($form.find('input[name="' + name + '"]:checked').length === 0) {
+                $row.find('.error-text').remove();
+                var errorText = $form.data('choose-option') || 'Molimo izaberite jednu opciju';
+                $row.append('<span class="error-text">' + errorText + '</span>');
+                isValid = false;
+                if (!firstInvalidField) {
+                    firstInvalidField = $row.find('input').first();
+                }
+            } else {
+                $row.find('.error-text').remove();
+            }
+        });
+
+        // Show general error message if form is invalid
+        if (!isValid) {
+            var $message = $form.find('.form-message');
+            var generalError = $form.data('fill-required') || 'Molimo popunite sva obavezna polja!';
+            $message.html('<div class="error-message">' + generalError + '</div>');
+            scrollToMessage($message);
+
+            // Scroll to first invalid field
+            if (firstInvalidField) {
+                setTimeout(function () {
+                    $('html, body').animate({
+                        scrollTop: firstInvalidField.offset().top - 150
+                    }, 500);
+                }, 100);
+            }
+        }
+
+        return isValid;
     }
 
     // Enhanced form completion tracking
@@ -140,11 +250,18 @@ jQuery(document).ready(function ($) {
         if (submittedForms.includes(formId)) {
             return false;
         }
-        submittedForms.push(formId);
 
         var $form = $(this);
         var $submitBtn = $form.find('button[type="submit"]');
         var $message = $form.find('.form-message');
+
+        // Validate form before submission
+        if (!validateForm($form)) {
+            return false;
+        }
+
+        // Add to submitted forms to prevent double submission
+        submittedForms.push(formId);
 
         // Disable submit button and show loading
         $submitBtn.prop('disabled', true);
@@ -157,10 +274,8 @@ jQuery(document).ready(function ($) {
         var action = '';
         if (formId === 'registration-form') {
             action = 'submit_registration';
-            $submitBtn.text('Šalje se...');
         } else if (formId === 'feedback-form') {
             action = 'submit_feedback';
-            $submitBtn.text('Šalje se...');
         }
 
         formData.append('action', action);
@@ -176,43 +291,70 @@ jQuery(document).ready(function ($) {
                 $submitBtn.prop('disabled', false);
 
                 if (response.success) {
-                    $message.html('<div class="success-message">' + response.data + '</div>');
-                    $form[0].reset();
+                    // Sakrij sve osim naslova
+                    $form.addClass('success-state');
+
+                    // Određi ispravnu poruku na osnovu jezika
+                    var $langInput = $form.find('input[name="language"]');
+                    var lang = $langInput.length ? $langInput.val() : 'sr';
+
+                    var successMessage, successSubtext;
 
                     if (formId === 'registration-form') {
-                        $submitBtn.text('Registracija uspešna!');
+                        successMessage = lang === 'sr' ? 'Registracija uspešna!' : 'Registration successful!';
+                        successSubtext = lang === 'sr' ? 'Uspešno ste se registrovali!' : 'You have successfully registered!';
                     } else {
-                        $submitBtn.text('Hvala na feedback-u!');
+                        successMessage = lang === 'sr' ? 'Hvala na feedback-u!' : 'Thank you for feedback!';
+                        successSubtext = lang === 'sr' ? 'Hvala na povratnim informacijama!' : 'Thank you for your feedback!';
                     }
 
-                    // Reset button text after 3 seconds
-                    setTimeout(function () {
-                        $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
-                    }, 3000);
+                    var successHtml = `
+        <div class="success-animation">
+            <div class="success-checkmark"></div>
+            <div class="success-text">${successMessage}</div>
+            <div class="success-subtext">${successSubtext}</div>
+        </div>
+    `;
 
-                    // Scroll to success message
-                    scrollToMessage($message);
+                    $form.append(successHtml);
 
-                    // Hide form after successful submission
+                    // Prikaži animaciju
                     setTimeout(function () {
-                        $form.fadeOut(1000);
-                    }, 2000);
+                        $form.find('.success-animation').addClass('show');
+                    }, 200);
+
+                    // Test mode reset
+                    if (typeof survey_test_mode !== 'undefined' && survey_test_mode) {
+                        setTimeout(function () {
+                            $form.removeClass('success-state');
+                            $form.find('.success-animation').remove();
+                            $form[0].reset();
+                            $form.find('.selected').removeClass('selected');
+                            $form.find('.error').removeClass('error');
+                            $form.find('.error-text').remove();
+                            updateProgressIndicator($form);
+                        }, 6000);
+                    }
 
                 } else {
                     $message.html('<div class="error-message">' + response.data + '</div>');
-                    $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
                     scrollToMessage($message);
                 }
             },
-            error: function () {
+            error: function (xhr, status, error) {
                 $form.removeClass('loading');
                 $submitBtn.prop('disabled', false);
-                $submitBtn.text($submitBtn.data('original-text') || 'Pošalji');
-                $message.html('<div class="error-message">Greška prilikom slanja. Molimo pokušajte ponovo.</div>');
+
+                var errorMessage = 'Greška prilikom slanja. Molimo pokušajte ponovo.';
+                if (xhr.responseJSON && xhr.responseJSON.data) {
+                    errorMessage = xhr.responseJSON.data;
+                }
+
+                $message.html('<div class="error-message">' + errorMessage + '</div>');
                 scrollToMessage($message);
             },
             complete: function () {
-                // Remove from array after 5 seconds to allow resubmission if needed
+                // Remove from submitted forms array after 5 seconds to allow resubmission if needed
                 setTimeout(function () {
                     var index = submittedForms.indexOf(formId);
                     if (index > -1) {
@@ -232,6 +374,24 @@ jQuery(document).ready(function ($) {
             // Visual feedback
             $(this).closest('.rating-group').find('label').removeClass('selected');
             $(this).addClass('selected');
+
+            // Remove any validation errors
+            $(this).closest('.form-row').find('.error-text').remove();
+        }
+    });
+
+    // Handle radio group clicks better
+    $('.radio-group label').on('click', function (e) {
+        var $input = $(this).find('input[type="radio"]');
+        if ($input.length) {
+            $input.prop('checked', true).trigger('change');
+
+            // Visual feedback
+            $(this).closest('.radio-group').find('label').removeClass('selected');
+            $(this).addClass('selected');
+
+            // Remove any validation errors
+            $(this).closest('.form-row').find('.error-text').remove();
         }
     });
 
@@ -242,6 +402,8 @@ jQuery(document).ready(function ($) {
             $form.find('.error').removeClass('error');
             $form.find('.error-text').remove();
             $form.find('.selected').removeClass('selected');
+            $form.find('.success-animation').remove();
+            $form.removeClass('loading');
             updateProgressIndicator($form);
         }, 10);
     });
@@ -251,6 +413,90 @@ jQuery(document).ready(function ($) {
         $(this).closest('.form-row').addClass('focused');
     }).on('blur', function () {
         $(this).closest('.form-row').removeClass('focused');
+    });
+
+    // Keyboard navigation improvements
+    $(document).on('keydown', function (e) {
+        // Enter key on radio/rating groups
+        if (e.keyCode === 13) {
+            var $focused = $(':focus');
+            if ($focused.is('input[type="radio"]')) {
+                $focused.prop('checked', true).trigger('change');
+                e.preventDefault();
+            }
+        }
+
+        // Arrow key navigation for radio groups
+        if (e.keyCode === 37 || e.keyCode === 39) { // Left/Right arrows
+            var $focused = $(':focus');
+            if ($focused.is('input[type="radio"]')) {
+                var $group = $focused.closest('.rating-group, .radio-group');
+                var $radios = $group.find('input[type="radio"]');
+                var currentIndex = $radios.index($focused);
+                var nextIndex;
+
+                if (e.keyCode === 37) { // Left arrow
+                    nextIndex = currentIndex > 0 ? currentIndex - 1 : $radios.length - 1;
+                } else { // Right arrow
+                    nextIndex = currentIndex < $radios.length - 1 ? currentIndex + 1 : 0;
+                }
+
+                $radios.eq(nextIndex).focus().prop('checked', true).trigger('change');
+                e.preventDefault();
+            }
+        }
+    });
+
+    // Auto-save functionality (optional)
+    var autoSaveTimer;
+    $('input, textarea').on('input change', function () {
+        var $form = $(this).closest('form');
+        clearTimeout(autoSaveTimer);
+
+        autoSaveTimer = setTimeout(function () {
+            // Save form data to sessionStorage
+            var formData = {};
+            $form.find('input, textarea').each(function () {
+                var $field = $(this);
+                if ($field.attr('type') === 'radio') {
+                    if ($field.is(':checked')) {
+                        formData[$field.attr('name')] = $field.val();
+                    }
+                } else if ($field.attr('type') !== 'hidden') {
+                    formData[$field.attr('name')] = $field.val();
+                }
+            });
+
+            sessionStorage.setItem('survey_' + $form.attr('id'), JSON.stringify(formData));
+        }, 1000);
+    });
+
+    // Restore form data on page load
+    $('form').each(function () {
+        var $form = $(this);
+        var savedData = sessionStorage.getItem('survey_' + $form.attr('id'));
+
+        if (savedData) {
+            try {
+                var data = JSON.parse(savedData);
+                $.each(data, function (name, value) {
+                    var $field = $form.find('[name="' + name + '"]');
+                    if ($field.attr('type') === 'radio') {
+                        $field.filter('[value="' + value + '"]').prop('checked', true).trigger('change');
+                    } else {
+                        $field.val(value);
+                    }
+                });
+                updateProgressIndicator($form);
+            } catch (e) {
+                // Invalid saved data, ignore
+            }
+        }
+    });
+
+    // Clear saved data after successful submission
+    $(document).on('survey_success', function (e, formId) {
+        sessionStorage.removeItem('survey_' + formId);
     });
 
 });
