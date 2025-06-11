@@ -69,7 +69,7 @@ class Survey_Shortcodes
 
         ob_start();
 ?>
-        <div class="survey-form registration-form">
+        <div class="indas-survey-form indas-registration-form">
             <h3><?php echo $t['title']; ?></h3>
 
             <?php if ($already_submitted): ?>
@@ -79,7 +79,7 @@ class Survey_Shortcodes
                     </div>
                 </div>
             <?php else: ?>
-                <form id="registration-form" method="post"
+                <form id="indas-participant-form" method="post"
                     data-field-required="<?php echo esc_attr($t['field_required']); ?>"
                     data-choose-option="<?php echo esc_attr($t['choose_option']); ?>"
                     data-fill-required="<?php echo esc_attr($t['fill_required_fields']); ?>">
@@ -87,42 +87,42 @@ class Survey_Shortcodes
                     <input type="hidden" name="language" value="<?php echo $lang; ?>">
                     <input type="hidden" name="user_hash" value="<?php echo $user_hash; ?>">
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['participant_name']; ?> *</label>
                         <input type="text" name="participant_name" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['company']; ?> *</label>
                         <input type="text" name="company" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['address']; ?> *</label>
                         <input type="text" name="address" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['position']; ?> *</label>
                         <input type="text" name="position" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['phone']; ?> *</label>
                         <input type="tel" name="phone" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['mobile']; ?> *</label>
                         <input type="tel" name="mobile" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['email']; ?> *</label>
                         <input type="email" name="email" required>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <button type="submit"><?php echo $t['submit']; ?></button>
                     </div>
 
@@ -266,7 +266,7 @@ class Survey_Shortcodes
 
         ob_start();
     ?>
-        <div class="survey-form feedback-form">
+        <div class="indas-survey-form indas-feedback-form">
             <h3><?php echo $t['title']; ?></h3>
 
             <?php if ($already_submitted): ?>
@@ -276,7 +276,7 @@ class Survey_Shortcodes
                     </div>
                 </div>
             <?php else: ?>
-                <form id="feedback-form" method="post"
+                <form id="indas-feedback-form" method="post"
                     data-field-required="<?php echo esc_attr($t['field_required']); ?>"
                     data-choose-option="<?php echo esc_attr($t['choose_option']); ?>"
                     data-fill-required="<?php echo esc_attr($t['fill_required_fields']); ?>">
@@ -287,7 +287,7 @@ class Survey_Shortcodes
 
                     <h4><?php echo $t['rate_following']; ?></h4>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['expectations_met']; ?></label>
                         <div class="radio-group">
                             <label><input type="radio" name="expectations_met" value="da" required> <?php echo $t['yes']; ?></label>
@@ -295,7 +295,7 @@ class Survey_Shortcodes
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['expectations_level']; ?></label>
                         <div class="rating-group">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -304,7 +304,7 @@ class Survey_Shortcodes
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['lecture_quality']; ?></label>
                         <div class="rating-group">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -313,7 +313,7 @@ class Survey_Shortcodes
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['lecturer_quality']; ?></label>
                         <div class="rating-group">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -322,7 +322,7 @@ class Survey_Shortcodes
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['practical_application']; ?></label>
                         <div class="rating-group">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -331,7 +331,7 @@ class Survey_Shortcodes
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['literature']; ?></label>
                         <div class="rating-group">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -343,7 +343,7 @@ class Survey_Shortcodes
                     <?php if ($type === 'standard'): ?>
                         <h4><?php echo $t['rate_organization']; ?></h4>
 
-                        <div class="form-row">
+                        <div class="indas-form-row">
                             <label><?php echo $t['premises']; ?></label>
                             <div class="rating-group">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -352,7 +352,7 @@ class Survey_Shortcodes
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        <div class="indas-form-row">
                             <label><?php echo $t['food']; ?></label>
                             <div class="rating-group">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -361,7 +361,7 @@ class Survey_Shortcodes
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        <div class="indas-form-row">
                             <label><?php echo $t['cooperation']; ?></label>
                             <div class="rating-group">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -372,7 +372,7 @@ class Survey_Shortcodes
                     <?php else: ?>
                         <h4><?php echo $t['rate_organization']; ?></h4>
 
-                        <div class="form-row">
+                        <div class="indas-form-row">
                             <label><?php echo $t['organization_rating']; ?></label>
                             <div class="rating-group">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
@@ -384,27 +384,27 @@ class Survey_Shortcodes
 
                     <h4><?php echo $t['future_courses']; ?></h4>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['advanced_step7']; ?></label>
                         <textarea name="advanced_step7" rows="2"></textarea>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['other_courses']; ?></label>
                         <textarea name="other_courses" rows="2"></textarea>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['improvements']; ?></label>
                         <textarea name="improvements" rows="4"></textarea>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <label><?php echo $t['additional_comments']; ?></label>
                         <textarea name="additional_comments" rows="4"></textarea>
                     </div>
 
-                    <div class="form-row">
+                    <div class="indas-form-row">
                         <button type="submit"><?php echo $t['submit']; ?></button>
                     </div>
 

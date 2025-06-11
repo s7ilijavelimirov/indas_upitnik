@@ -1,7 +1,10 @@
 jQuery(document).ready(function ($) {
 
+    // Ograniči sve samo na Indas survey forme
+    $('.indas-survey-form form').attr('novalidate', 'novalidate');
+
     // Store original button text
-    $('button[type="submit"]').each(function () {
+    $('.indas-survey-form button[type="submit"]').each(function () {
         $(this).data('original-text', $(this).text());
     });
 
@@ -19,51 +22,51 @@ jQuery(document).ready(function ($) {
         $(this).closest('label').addClass('selected');
     });
 
-    // Form validation enhancement
-    $('input[required], textarea[required]').on('blur', function () {
+    // Form validation enhancement - samo Indas forme
+    $('.indas-survey-form input[required], .indas-survey-form textarea[required]').on('blur', function () {
         validateField($(this));
     });
 
-    $('input[required], textarea[required]').on('input', function () {
+    $('.indas-survey-form input[required], .indas-survey-form textarea[required]').on('input', function () {
         if ($(this).val().trim() !== '') {
             $(this).removeClass('error');
-            $(this).siblings('.error-text').remove();
+            $(this).siblings('.indas-error-text').remove();
         }
     });
 
-    // Email validation
-    $('input[type="email"]').on('blur', function () {
+    // Email validation - samo Indas forme
+    $('.indas-survey-form input[type="email"]').on('blur', function () {
         var email = $(this).val();
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        $(this).siblings('.error-text').remove();
+        $(this).siblings('.indas-error-text').remove();
 
         if (email && !emailRegex.test(email)) {
             $(this).addClass('error');
-            $(this).after('<span class="error-text">Molimo unesite ispravnu email adresu</span>');
+            $(this).after('<span class="indas-error-text">Molimo unesite ispravnu email adresu</span>');
         } else if (email) {
             $(this).removeClass('error');
         }
     });
 
-    // Phone validation
-    $('input[type="tel"]').on('input', function () {
+    // Phone validation - samo Indas forme, izmenjeno za 10+ cifara
+    $('.indas-survey-form input[type="tel"]').on('input', function () {
         var phone = $(this).val();
         // Remove all non-digit characters for validation
         var cleanPhone = phone.replace(/\D/g, '');
 
-        $(this).siblings('.error-text').remove();
+        $(this).siblings('.indas-error-text').remove();
 
-        if (cleanPhone.length > 0 && cleanPhone.length < 6) {
+        if (cleanPhone.length > 0 && cleanPhone.length < 10) {
             $(this).addClass('error');
-            $(this).after('<span class="error-text">Telefon mora imati najmanje 6 cifara</span>');
+            $(this).after('<span class="indas-error-text">Telefon mora imati najmanje 10 cifara</span>');
         } else {
             $(this).removeClass('error');
         }
     });
 
-    // Auto-resize textareas
-    $('textarea').on('input', function () {
+    // Auto-resize textareas - samo Indas forme
+    $('.indas-survey-form textarea').on('input', function () {
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
@@ -83,14 +86,14 @@ jQuery(document).ready(function ($) {
         var value = $field.val().trim();
         var $form = $field.closest('form');
 
-        $field.siblings('.error-text').remove();
+        $field.siblings('.indas-error-text').remove();
         $field.removeClass('error');
 
         // Required field validation
         if ($field.prop('required') && value === '') {
             $field.addClass('error');
             var errorText = $form.data('field-required') || 'Ovo polje je obavezno, molimo vas popunite';
-            $field.after('<span class="error-text">' + errorText + '</span>');
+            $field.after('<span class="indas-error-text">' + errorText + '</span>');
             isValid = false;
         }
 
@@ -99,17 +102,17 @@ jQuery(document).ready(function ($) {
             var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
                 $field.addClass('error');
-                $field.after('<span class="error-text">Molimo unesite ispravnu email adresu</span>');
+                $field.after('<span class="indas-error-text">Molimo unesite ispravnu email adresu</span>');
                 isValid = false;
             }
         }
 
-        // Phone validation
+        // Phone validation - izmenjeno za 10+ cifara
         if ($field.attr('type') === 'tel' && value !== '') {
             var cleanPhone = value.replace(/\D/g, '');
-            if (cleanPhone.length < 6) {
+            if (cleanPhone.length < 10) {
                 $field.addClass('error');
-                $field.after('<span class="error-text">Telefon mora imati najmanje 6 cifara</span>');
+                $field.after('<span class="indas-error-text">Telefon mora imati najmanje 10 cifara</span>');
                 isValid = false;
             }
         }
@@ -118,7 +121,7 @@ jQuery(document).ready(function ($) {
         if ($field.attr('name') === 'participant_name' && value !== '') {
             if (value.length < 2) {
                 $field.addClass('error');
-                $field.after('<span class="error-text">Ime mora imati najmanje 2 karaktera</span>');
+                $field.after('<span class="indas-error-text">Ime mora imati najmanje 2 karaktera</span>');
                 isValid = false;
             }
         }
@@ -131,63 +134,96 @@ jQuery(document).ready(function ($) {
         var isValid = true;
         var firstInvalidField = null;
 
-        // Validate all required fields
+        // Obriši sve stare greške
+        $form.find('.indas-error-text').remove();
+        $form.find('.error').removeClass('error');
+
+        // Provjeri SVA required polja i ODMAH dodaj greške
         $form.find('input[required], textarea[required]').each(function () {
-            if (!validateField($(this))) {
+            var $field = $(this);
+            var value = $field.val().trim();
+
+            // Ako je polje prazno - ODMAH dodaj grešku
+            if (value === '') {
+                $field.addClass('error');
+                var errorText = $form.data('field-required') || 'Ovo polje je obavezno, molimo vas popunite';
+                $field.after('<span class="indas-error-text">' + errorText + '</span>');
                 isValid = false;
                 if (!firstInvalidField) {
-                    firstInvalidField = $(this);
+                    firstInvalidField = $field;
+                }
+            } else {
+                // Dodatne validacije ako polje nije prazno
+                if ($field.attr('type') === 'email') {
+                    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        $field.addClass('error');
+                        $field.after('<span class="indas-error-text">Molimo unesite ispravnu email adresu</span>');
+                        isValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = $field;
+                        }
+                    }
+                }
+
+                if ($field.attr('type') === 'tel') {
+                    var cleanPhone = value.replace(/\D/g, '');
+                    if (cleanPhone.length < 10) {
+                        $field.addClass('error');
+                        $field.after('<span class="indas-error-text">Telefon mora imati najmanje 10 cifara</span>');
+                        isValid = false;
+                        if (!firstInvalidField) {
+                            firstInvalidField = $field;
+                        }
+                    }
                 }
             }
         });
 
-        // Validate required radio groups
+        // Provjeri required radio grupe
         var radioGroups = {};
         $form.find('input[type="radio"][required]').each(function () {
             var name = $(this).attr('name');
             if (!radioGroups[name]) {
-                radioGroups[name] = $(this).closest('.form-row');
+                radioGroups[name] = $(this).closest('.indas-form-row');
             }
         });
 
         $.each(radioGroups, function (name, $row) {
             if ($form.find('input[name="' + name + '"]:checked').length === 0) {
-                $row.find('.error-text').remove();
                 var errorText = $form.data('choose-option') || 'Molimo izaberite jednu opciju';
-                $row.append('<span class="error-text">' + errorText + '</span>');
+                $row.find('label:first').after('<span class="indas-error-text">' + errorText + '</span>');
                 isValid = false;
                 if (!firstInvalidField) {
                     firstInvalidField = $row.find('input').first();
                 }
-            } else {
-                $row.find('.error-text').remove();
             }
         });
 
-        // Show general error message if form is invalid
+        // Forsiraj repaint da se odmah pokažu greške
         if (!isValid) {
-            var $message = $form.find('.form-message');
-            var generalError = $form.data('fill-required') || 'Molimo popunite sva obavezna polja!';
-            $message.html('<div class="error-message">' + generalError + '</div>');
-            scrollToMessage($message);
+            // Trigger repaint
+            $form.find('.indas-error-text').each(function () {
+                this.offsetHeight;
+            });
 
-            // Scroll to first invalid field
+            // Skroluj do prve greške
             if (firstInvalidField) {
                 setTimeout(function () {
                     $('html, body').animate({
                         scrollTop: firstInvalidField.offset().top - 150
-                    }, 500);
-                }, 100);
+                    }, 300);
+                }, 50);
             }
         }
 
         return isValid;
     }
 
-    // Enhanced form completion tracking
+    // Enhanced form completion tracking - samo Indas forme
     var formData = {};
 
-    $('input, textarea, select').on('change input', function () {
+    $('.indas-survey-form input, .indas-survey-form textarea, .indas-survey-form select').on('change input', function () {
         var $form = $(this).closest('form');
         var formId = $form.attr('id');
 
@@ -198,6 +234,9 @@ jQuery(document).ready(function ($) {
     });
 
     function updateProgressIndicator($form) {
+        if (!$form.hasClass('indas-survey-form') && !$form.closest('.indas-survey-form').length) {
+            return;
+        }
         var totalFields = $form.find('input[required], textarea[required], select[required]').length;
         var filledFields = 0;
         var countedRadioGroups = [];
@@ -235,16 +274,17 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    // Initialize progress indicators
-    $('form').each(function () {
+    // Initialize progress indicators - samo Indas forme
+    $('.indas-survey-form form').each(function () {
         updateProgressIndicator($(this));
     });
 
-    // Prevent double submission
+    // Prevent double submission - samo Indas forme
     var submittedForms = [];
 
-    $('form').on('submit', function (e) {
+    $('.indas-survey-form form').on('submit', function (e) {
         e.preventDefault();
+        e.stopPropagation();
 
         var formId = $(this).attr('id');
         if (submittedForms.includes(formId)) {
@@ -272,9 +312,9 @@ jQuery(document).ready(function ($) {
 
         // Determine which action to use
         var action = '';
-        if (formId === 'registration-form') {
+        if (formId === 'indas-participant-form') {
             action = 'submit_registration';
-        } else if (formId === 'feedback-form') {
+        } else if (formId === 'indas-feedback-form') {
             action = 'submit_feedback';
         }
 
@@ -300,7 +340,7 @@ jQuery(document).ready(function ($) {
 
                     var successMessage, successSubtext;
 
-                    if (formId === 'registration-form') {
+                    if (formId === 'indas-participant-form') {
                         successMessage = lang === 'sr' ? 'Registracija uspešna!' : 'Registration successful!';
                         successSubtext = lang === 'sr' ? 'Uspešno ste se registrovali!' : 'You have successfully registered!';
                     } else {
@@ -309,12 +349,12 @@ jQuery(document).ready(function ($) {
                     }
 
                     var successHtml = `
-        <div class="success-animation">
-            <div class="success-checkmark"></div>
-            <div class="success-text">${successMessage}</div>
-            <div class="success-subtext">${successSubtext}</div>
-        </div>
-    `;
+                        <div class="success-animation">
+                            <div class="success-checkmark"></div>
+                            <div class="success-text">${successMessage}</div>
+                            <div class="success-subtext">${successSubtext}</div>
+                        </div>
+                    `;
 
                     $form.append(successHtml);
 
@@ -331,7 +371,7 @@ jQuery(document).ready(function ($) {
                             $form[0].reset();
                             $form.find('.selected').removeClass('selected');
                             $form.find('.error').removeClass('error');
-                            $form.find('.error-text').remove();
+                            $form.find('.indas-error-text').remove();
                             updateProgressIndicator($form);
                         }, 6000);
                     }
@@ -376,7 +416,7 @@ jQuery(document).ready(function ($) {
             $(this).addClass('selected');
 
             // Remove any validation errors
-            $(this).closest('.form-row').find('.error-text').remove();
+            $(this).closest('.indas-form-row').find('.indas-error-text').remove();
         }
     });
 
@@ -391,28 +431,21 @@ jQuery(document).ready(function ($) {
             $(this).addClass('selected');
 
             // Remove any validation errors
-            $(this).closest('.form-row').find('.error-text').remove();
+            $(this).closest('.indas-form-row').find('.indas-error-text').remove();
         }
     });
 
-    // Better form reset handling
-    $('form').on('reset', function () {
+    // Better form reset handling - samo Indas forme
+    $('.indas-survey-form form').on('reset', function () {
         var $form = $(this);
         setTimeout(function () {
             $form.find('.error').removeClass('error');
-            $form.find('.error-text').remove();
+            $form.find('.indas-error-text').remove();
             $form.find('.selected').removeClass('selected');
             $form.find('.success-animation').remove();
             $form.removeClass('loading');
             updateProgressIndicator($form);
         }, 10);
-    });
-
-    // Form field focus improvements
-    $('input, textarea').on('focus', function () {
-        $(this).closest('.form-row').addClass('focused');
-    }).on('blur', function () {
-        $(this).closest('.form-row').removeClass('focused');
     });
 
     // Keyboard navigation improvements
@@ -447,9 +480,9 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // Auto-save functionality (optional)
+    // Auto-save functionality - samo Indas forme
     var autoSaveTimer;
-    $('input, textarea').on('input change', function () {
+    $('.indas-survey-form input, .indas-survey-form textarea').on('input change', function () {
         var $form = $(this).closest('form');
         clearTimeout(autoSaveTimer);
 
@@ -467,14 +500,14 @@ jQuery(document).ready(function ($) {
                 }
             });
 
-            sessionStorage.setItem('survey_' + $form.attr('id'), JSON.stringify(formData));
+            sessionStorage.setItem('indas_survey_' + $form.attr('id'), JSON.stringify(formData));
         }, 1000);
     });
 
-    // Restore form data on page load
-    $('form').each(function () {
+    // Restore form data on page load - samo Indas forme
+    $('.indas-survey-form form').each(function () {
         var $form = $(this);
-        var savedData = sessionStorage.getItem('survey_' + $form.attr('id'));
+        var savedData = sessionStorage.getItem('indas_survey_' + $form.attr('id'));
 
         if (savedData) {
             try {
@@ -496,7 +529,7 @@ jQuery(document).ready(function ($) {
 
     // Clear saved data after successful submission
     $(document).on('survey_success', function (e, formId) {
-        sessionStorage.removeItem('survey_' + formId);
+        sessionStorage.removeItem('indas_survey_' + formId);
     });
 
 });
