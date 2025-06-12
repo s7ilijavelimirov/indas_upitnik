@@ -109,12 +109,12 @@ class Survey_Shortcodes
 
                     <div class="indas-form-row">
                         <label><?php echo $t['phone']; ?> *</label>
-                        <input type="tel" name="phone" required>
+                        <input type="number" name="phone" required>
                     </div>
 
                     <div class="indas-form-row">
                         <label><?php echo $t['mobile']; ?> *</label>
-                        <input type="tel" name="mobile" required>
+                        <input type="number" name="mobile" required>
                     </div>
 
                     <div class="indas-form-row">
@@ -290,8 +290,8 @@ class Survey_Shortcodes
                     <div class="indas-form-row">
                         <label><?php echo $t['expectations_met']; ?></label>
                         <div class="radio-group">
-                            <label><input type="radio" name="expectations_met" value="da" required> <?php echo $t['yes']; ?></label>
-                            <label><input type="radio" name="expectations_met" value="ne" required> <?php echo $t['no']; ?></label>
+                            <label data-option="da"><input type="radio" name="expectations_met" value="da" required> <?php echo $t['yes']; ?></label>
+                            <label data-option="ne"><input type="radio" name="expectations_met" value="ne" required> <?php echo $t['no']; ?></label>
                         </div>
                     </div>
 

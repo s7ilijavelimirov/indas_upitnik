@@ -111,7 +111,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     display: none;
 }
 
@@ -126,7 +126,7 @@
     overflow-y: auto;
     position: relative;
     border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .feedback-modal-content h3 {
@@ -181,7 +181,7 @@
     background: #fff;
     border: 1px solid #c3c4c7;
     border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
 }
 
 .dashboard-widgets-wrap .postbox h2 {
@@ -195,6 +195,10 @@
     background: #f6f7f7;
 }
 
+.qr-actions a.button.button-primary {
+    margin-top: 1rem;
+}
+
 .dashboard-widgets-wrap .inside p strong {
     color: #1d2327;
 }
@@ -205,21 +209,21 @@
         grid-template-columns: 1fr;
         gap: 15px;
     }
-    
+
     .qr-code-section {
         padding: 15px;
     }
-    
+
     .feedback-modal-content {
         width: 95%;
         margin: 2% auto;
         max-height: 95vh;
     }
-    
+
     .wp-list-table {
         font-size: 14px;
     }
-    
+
     .wp-list-table th,
     .wp-list-table td {
         padding: 8px 4px;
@@ -239,8 +243,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 /* Success/Error Messages */
@@ -318,7 +327,7 @@
     border-radius: 4px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .04);
 }
 
 .stat-number {

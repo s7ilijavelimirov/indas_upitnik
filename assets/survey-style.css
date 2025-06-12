@@ -1,274 +1,387 @@
-/* Survey Form Styles - Updated Design */
+/* Survey Form Styles - Conflict-Free Version */
 .indas-survey-form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 40px;
-    background: #f8f8f8;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 153, 153, 0.1);
-    font-family: "Barlow", sans-serif;
-    position: relative;
-    transition: all 0.5s ease;
+    max-width: 800px !important;
+    margin: 20px auto !important;
+    padding: 40px !important;
+    background: #f8f8f8 !important;
+    border: 1px solid #099 !important;
+    position: relative !important;
+    transition: all 0.5s ease !important;
+    box-sizing: border-box !important;
+}
+
+.indas-survey-form * {
+    box-sizing: border-box !important;
 }
 
 .indas-survey-form h3 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 28px;
-    font-weight: 600;
-    border-bottom: 3px solid #099;
-    padding-bottom: 15px;
+    text-align: center !important;
+    color: #333 !important;
+    margin: 0 0 30px 0 !important;
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    border-bottom: 3px solid #099 !important;
+    padding: 0 0 15px 0 !important;
+    line-height: 1.2 !important;
 }
 
 .indas-survey-form h4 {
-    color: #555;
-    margin: 30px 0 20px 0;
-    font-size: 20px;
-    font-weight: 500;
-    border-left: 4px solid #099;
-    padding-left: 15px;
+    color: #555 !important;
+    margin: 30px 0 20px 0 !important;
+    font-size: 20px !important;
+    font-weight: 500 !important;
+    border-left: 4px solid #099 !important;
+    padding: 0 0 0 15px !important;
+    line-height: 1.3 !important;
 }
 
 .indas-form-row {
-    margin-bottom: 25px;
-    position: relative;
+    margin-bottom: 25px !important;
+    position: relative !important;
+    clear: both !important;
 }
 
-.indas-form-row label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-    font-size: 16px;
+.indas-form-row>label {
+    display: block !important;
+    margin: 0 0 8px 0 !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    font-family: inherit !important;
 }
 
 .indas-form-row input[type="text"],
 .indas-form-row input[type="email"],
-.indas-form-row input[type="tel"],
+.indas-form-row input[type="number"],
 .indas-form-row textarea {
-    width: 100%;
-    padding: 14px 16px;
-    border: 2px solid #e0e0e0;
-  
-    font-size: 16px;
-    font-family: "Barlow", sans-serif;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-    background: white;
+    width: 100% !important;
+    padding: 14px 16px !important;
+    border: 2px solid #e0e0e0 !important;
+
+    font-size: 16px !important;
+    font-family: inherit !important;
+    transition: all 0.3s ease !important;
+    box-sizing: border-box !important;
+    background: white !important;
+    color: #333 !important;
+    line-height: 1.4 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    display: block !important;
 }
 
-.indas-form-row input:focus,
+.indas-form-row input[type="text"]:focus,
+.indas-form-row input[type="email"]:focus,
+.indas-form-row input[type="number"]:focus,
 .indas-form-row textarea:focus {
-    outline: none;
-    border-color: #099;
-    box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.1);
-    /* uklonjen transform */
+    outline: none !important;
+    border-color: #099 !important;
+    box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.1) !important;
+    background: white !important;
 }
 
 .indas-form-row input.error,
 .indas-form-row textarea.error {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
 }
 
 .indas-form-row textarea {
-    resize: vertical;
-    min-height: 80px;
+    resize: vertical !important;
+    min-height: 80px !important;
+    max-height: 200px !important;
 }
 
 /* Radio button groups */
-.radio-group,
-.rating-group {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 10px;
+.indas-survey-form .radio-group,
+.indas-survey-form .rating-group {
+    display: flex !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+    margin: 10px 0 0 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
 }
 
-.radio-group label,
-.rating-group label {
-    display: flex;
-    align-items: center;
-    font-weight: normal;
-    cursor: pointer;
-    margin-bottom: 0;
-    padding: 8px 12px;
-    border: 2px solid #e0e0e0;
+.indas-survey-form .radio-group label,
+.indas-survey-form .rating-group label {
+    display: flex !important;
+    align-items: center !important;
+    font-weight: normal !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 12px 16px !important;
+    border: 2px solid #e0e0e0 !important;
 
-    background: white;
-    transition: all 0.3s ease;
+    background: white !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    color: #333 !important;
+    text-align: center !important;
+    justify-content: center !important;
+    min-width: 50px !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
-.radio-group label:hover,
-.rating-group label:hover {
-    border-color: #099;
-    background: rgba(0, 153, 153, 0.05);
+.indas-survey-form .radio-group label:hover,
+.indas-survey-form .rating-group label:hover {
+    border-color: #099 !important;
+    background: rgba(0, 153, 153, 0.05) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 4px 12px rgba(0, 153, 153, 0.15) !important;
 }
 
-.radio-group input,
-.rating-group input {
-    margin-right: 8px;
-    margin-bottom: 0;
-    width: auto;
+/* Hide default radio buttons */
+.indas-survey-form .radio-group input[type="radio"],
+.indas-survey-form .rating-group input[type="radio"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    clip: rect(0, 0, 0, 0) !important;
+    overflow: hidden !important;
 }
 
-.rating-group {
-    background: transparent;
-    padding: 0;
-    border: none;
+/* Custom radio indicator for regular radio groups */
+.indas-survey-form .radio-group label::before {
+    content: '' !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid #ddd !important;
+    border-radius: 50% !important;
+    margin-right: 10px !important;
+    background: white !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
 }
 
-.rating-group label {
-    flex: 1;
-    justify-content: center;
-    min-width: 50px;
-    font-weight: 600;
+.indas-survey-form .radio-group label::after {
+    content: '' !important;
+    width: 10px !important;
+    height: 10px !important;
+    background: #099 !important;
+    border-radius: 50% !important;
+    position: absolute !important;
+    left: 21px !important;
+    top: 50% !important;
+    transform: translateY(-50%) scale(0) !important;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
 }
 
-.rating-group input[type="radio"]:checked+span,
-.rating-group label:has(input[type="radio"]:checked),
-.radio-group input[type="radio"]:checked+span,
-.radio-group label:has(input[type="radio"]:checked) {
-    background: #099;
-    color: white;
-    border-color: #099;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 153, 153, 0.3);
+.indas-survey-form .radio-group label:hover::before {
+    border-color: #099 !important;
+    box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.1) !important;
 }
 
-/* Fallback for browsers without :has() */
-.rating-group input[type="radio"]:checked {
-    background: #099;
+/* Rating groups - no radio circles, just numbers */
+.indas-survey-form .rating-group label::before,
+.indas-survey-form .rating-group label::after {
+    display: none !important;
 }
 
-.rating-group input[type="radio"]:checked~*,
-.radio-group input[type="radio"]:checked~* {
-    background: #099;
-    color: white;
-    border-color: #099;
+.indas-survey-form .rating-group {
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
 }
 
-.rating-group label.selected,
-.radio-group label.selected {
-    background: #099;
-    color: white;
-    border-color: #099;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 153, 153, 0.3);
+.indas-survey-form .rating-group label {
+    flex: 1 !important;
+    justify-content: center !important;
+    min-width: 50px !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    padding: 14px 12px !important;
+}
+
+/* Checked states */
+.indas-survey-form .radio-group input[type="radio"]:checked+label,
+.indas-survey-form .radio-group label.selected {
+    background: linear-gradient(135deg, #099 0%, #0bb 100%) !important;
+    color: white !important;
+    border-color: #099 !important;
+    /* transform: translateY(-3px) scale(1.05) !important; - OBRISANO */
+}
+
+.indas-survey-form .radio-group input[type="radio"]:checked+label::before,
+.indas-survey-form .radio-group label.selected::before {
+    border-color: white !important;
+    background: white !important;
+}
+
+.indas-survey-form .radio-group input[type="radio"]:checked+label::after,
+.indas-survey-form .radio-group label.selected::after {
+    background: #099 !important;
+    transform: translateY(-50%) scale(1) !important;
+}
+
+.indas-survey-form .rating-group input[type="radio"]:checked+label,
+.indas-survey-form .rating-group label.selected {
+    background: linear-gradient(135deg, #099 0%, #0bb 100%) !important;
+    color: white !important;
+    border-color: #099 !important;
+    /* transform: translateY(-3px) scale(1.1) !important; - OBRISANO */
+    font-weight: 700 !important;
+}
+
+/* Focus states for accessibility */
+.indas-survey-form .radio-group input[type="radio"]:focus+label,
+.indas-survey-form .rating-group input[type="radio"]:focus+label {
+    outline: 2px solid #099 !important;
+    outline-offset: 2px !important;
+}
+
+/* Active/pressed states */
+.indas-survey-form .radio-group label:active,
+.indas-survey-form .rating-group label:active {
+    transform: translateY(-1px) scale(0.98) !important;
+    transition: all 0.1s ease !important;
 }
 
 /* Submit button */
 .indas-form-row button[type="submit"] {
-    background: linear-gradient(135deg, #099 0%, #0bb 100%);
-    color: white;
-    padding: 16px 40px;
-    border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    font-family: "Barlow", sans-serif;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 100%;
-    box-shadow: 0 4px 16px rgba(0, 153, 153, 0.3);
+    background: linear-gradient(135deg, #099 0%, #0bb 100%) !important;
+    color: white !important;
+    padding: 16px 40px !important;
+    border: none !important;
+
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    font-family: inherit !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    box-shadow: 0 4px 16px rgba(0, 153, 153, 0.3) !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    outline: none !important;
 }
 
 .indas-form-row button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 153, 153, 0.4);
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 153, 153, 0.4) !important;
+    background: linear-gradient(135deg, #077 0%, #099 100%) !important;
 }
 
 .indas-form-row button[type="submit"]:active {
-    transform: translateY(0);
+    transform: translateY(0) !important;
 }
 
 .indas-form-row button[type="submit"]:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    background: #ccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.6 !important;
 }
 
-/* Required field indicator - SAMO za glavni label */
+/* Required field indicator */
 .indas-form-row>label::after {
-    content: "";
+    content: "" !important;
 }
 
 .indas-form-row:has(> input[required])>label::after,
 .indas-form-row:has(> textarea[required])>label::after,
 .indas-form-row:has(> .radio-group input[required])>label::after,
 .indas-form-row:has(> .rating-group input[required])>label::after {
-    content: " *";
-    color: #EE3524;
-    font-weight: bold;
+    content: " *" !important;
+    color: #EE3524 !important;
+    font-weight: bold !important;
 }
 
-/* NE dodaj * na radio/rating labele */
-.radio-group label::after,
-.rating-group label::after {
+/* Fallback for browsers without :has() */
+.indas-form-row .required-field::after {
+    content: " *" !important;
+    color: #EE3524 !important;
+    font-weight: bold !important;
+}
+
+/* Radio/rating labels should NOT have asterisk */
+.indas-survey-form .radio-group label::after,
+.indas-survey-form .rating-group label::after {
     content: "" !important;
+    display: none !important;
 }
 
 /* Success Animation */
-.success-animation {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.5s ease;
+.indas-survey-form .success-animation {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 40px 20px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: all 0.5s ease !important;
+    margin: 0 !important;
+    background: transparent !important;
 }
 
-.success-animation.show {
-    opacity: 1;
-    visibility: visible;
+.indas-survey-form .success-animation.show {
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
-.success-checkmark {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #4CAF50;
-    position: relative;
-    margin-bottom: 20px;
-    animation: successPulse 0.6s ease-out;
+.indas-survey-form .success-checkmark {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    background: #4CAF50 !important;
+    position: relative !important;
+    margin: 0 0 20px 0 !important;
+    animation: indas-successPulse 0.6s ease-out !important;
 }
 
-.success-checkmark::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(45deg);
-    width: 16px;
-    height: 32px;
-    border: 4px solid white;
-    border-top: none;
-    border-left: none;
-    animation: checkmarkDraw 0.4s ease-out 0.3s both;
+.indas-survey-form .success-checkmark::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+    width: 16px !important;
+    height: 32px !important;
+    border: 4px solid white !important;
+    border-top: none !important;
+    border-left: none !important;
+    animation: indas-checkmarkDraw 0.4s ease-out 0.3s both !important;
 }
 
-.success-text {
-    font-size: 28px;
-    font-weight: 600;
-    color: #4CAF50;
-    margin-bottom: 15px;
-    text-align: center;
-    animation: fadeInUp 0.5s ease-out 0.5s both;
+.indas-survey-form .success-text {
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    color: #4CAF50 !important;
+    margin: 0 0 15px 0 !important;
+    text-align: center !important;
+    animation: indas-fadeInUp 0.5s ease-out 0.5s both !important;
+    line-height: 1.2 !important;
 }
 
-.success-subtext {
-    font-size: 18px;
-    color: #666;
-    text-align: center;
-    animation: fadeInUp 0.5s ease-out 0.7s both;
+.indas-survey-form .success-subtext {
+    font-size: 18px !important;
+    color: #666 !important;
+    text-align: center !important;
+    animation: indas-fadeInUp 0.5s ease-out 0.7s both !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
 }
 
-@keyframes successPulse {
+@keyframes indas-successPulse {
     0% {
         transform: scale(0);
         opacity: 0;
@@ -284,7 +397,7 @@
     }
 }
 
-@keyframes checkmarkDraw {
+@keyframes indas-checkmarkDraw {
     0% {
         height: 0;
         width: 0;
@@ -304,7 +417,7 @@
     }
 }
 
-@keyframes fadeInUp {
+@keyframes indas-fadeInUp {
     0% {
         opacity: 0;
         transform: translateY(20px);
@@ -316,60 +429,59 @@
     }
 }
 
-/* Success state - kompaktno */
+/* Success state */
 .indas-survey-form.success-state {
-    padding: 40px;
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    padding: 40px !important;
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
 }
 
-/* Sakrij sve osim naslova i success animacije */
 .indas-survey-form.success-state>*:not(h3):not(.success-animation) {
     display: none !important;
 }
 
 .indas-survey-form.success-state h3 {
-    margin-bottom: 30px;
-    order: -1;
+    margin: 0 0 30px 0 !important;
+    order: -1 !important;
 }
 
 .indas-survey-form.success-state .success-animation {
-    position: static;
-    background: transparent;
-    padding: 0;
-    width: 100%;
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
 }
 
 /* Loading state */
 .indas-survey-form.loading {
-    pointer-events: none;
+    pointer-events: none !important;
 }
 
 .indas-survey-form.loading button[type="submit"] {
-    background: #ccc;
-    position: relative;
-    color: transparent;
+    background: #ccc !important;
+    position: relative !important;
+    color: transparent !important;
 }
 
 .indas-survey-form.loading button[type="submit"]::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-top: 2px solid white !important;
+    border-radius: 50% !important;
+    animation: indas-spin 1s linear infinite !important;
 }
 
-@keyframes spin {
+@keyframes indas-spin {
     0% {
         transform: translate(-50%, -50%) rotate(0deg);
     }
@@ -380,26 +492,22 @@
 }
 
 /* Error styling */
-.indas-error-text {
-    color: #dc3545;
-    font-size: 14px;
-    margin-top: 8px !important;
-    /* povećaj margin */
-    margin-bottom: 5px !important;
-    /* dodaj bottom margin */
+.indas-survey-form .indas-error-text {
+    color: #dc3545 !important;
+    font-size: 14px !important;
+    margin: 8px 0 5px 0 !important;
     display: block !important;
-    font-weight: 500;
-    padding: 8px 12px;
-    /* povećaj padding */
-    background: rgba(220, 53, 69, 0.1);
-    border-radius: 6px;
-    border-left: 3px solid #dc3545;
-    animation: slideDown 0.3s ease-out;
-    /* dodaj animaciju */
+    font-weight: 500 !important;
+    padding: 8px 12px !important;
+    background: rgba(220, 53, 69, 0.1) !important;
+
+    border-left: 3px solid #dc3545 !important;
+    animation: indas-slideDown 0.3s ease-out !important;
+    line-height: 1.4 !important;
+    font-family: inherit !important;
 }
 
-/* Dodaj animaciju */
-@keyframes slideDown {
+@keyframes indas-slideDown {
     0% {
         opacity: 0;
         transform: translateY(-10px);
@@ -414,32 +522,36 @@
 }
 
 /* Form messages */
-.form-message {
-    margin-top: 15px;
-    padding: 12px;
- 
-    text-align: center;
+.indas-survey-form .form-message {
+    margin: 15px 0 0 0 !important;
+    padding: 12px !important;
+
+    text-align: center !important;
+    font-family: inherit !important;
 }
 
-.form-message .success-message {
-    background: #e8f5e8;
-    color: #2e7d32;
-    border: 1px solid #4caf50;
-    padding: 12px;
-   
+.indas-survey-form .form-message .success-message {
+    background: #e8f5e8 !important;
+    color: #2e7d32 !important;
+    border: 1px solid #4caf50 !important;
+    padding: 12px !important;
+
+    margin: 0 !important;
+    font-weight: 500 !important;
 }
 
-.form-message .error-message {
-    background: #ffebee;
-    color: #c62828;
-    border: 2px solid #f44336;
-    padding: 16px;
-  
-    font-weight: 600;
-    animation: shake 0.5s ease-in-out;
+.indas-survey-form .form-message .error-message {
+    background: #ffebee !important;
+    color: #c62828 !important;
+    border: 2px solid #f44336 !important;
+    padding: 16px !important;
+
+    font-weight: 600 !important;
+    animation: indas-shake 0.5s ease-in-out !important;
+    margin: 0 !important;
 }
 
-@keyframes shake {
+@keyframes indas-shake {
     0%, 100% {
         transform: translateX(0);
     }
@@ -454,95 +566,128 @@
 }
 
 /* Progress bar */
-.progress-container {
-    margin-bottom: 25px;
-    padding: 20px;
-    background: rgba(0, 153, 153, 0.05);
-    border-radius: 12px;
-    border: 1px solid rgba(0, 153, 153, 0.1);
+.indas-survey-form .progress-container {
+    margin: 0 0 25px 0 !important;
+    padding: 20px !important;
+    background: rgba(0, 153, 153, 0.05) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 153, 153, 0.1) !important;
 }
 
-.progress-container.complete {
-    background: rgba(76, 175, 80, 0.05);
-    border-color: rgba(76, 175, 80, 0.2);
+.indas-survey-form .progress-container.complete {
+    background: rgba(76, 175, 80, 0.05) !important;
+    border-color: rgba(76, 175, 80, 0.2) !important;
 }
 
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(0, 153, 153, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 8px;
+.indas-survey-form .progress-bar {
+    width: 100% !important;
+    height: 8px !important;
+    background: rgba(0, 153, 153, 0.1) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    margin: 0 0 8px 0 !important;
+    position: relative !important;
 }
 
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #099, #0bb);
-    transition: width 0.3s ease;
-    border-radius: 4px;
+.indas-survey-form .progress-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #099, #0bb) !important;
+    transition: width 0.3s ease !important;
+    border-radius: 4px !important;
+   
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
 }
 
-.progress-container.complete .progress-fill {
-    background: linear-gradient(90deg, #4CAF50, #66BB6A);
+.indas-survey-form .progress-container.complete .progress-fill {
+    background: linear-gradient(90deg, #4CAF50, #66BB6A) !important;
 }
 
-.progress-text {
-    font-size: 14px;
-    color: #099;
-    font-weight: 600;
+.indas-survey-form .progress-text {
+    font-size: 14px !important;
+    color: #099 !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    font-family: inherit !important;
 }
 
-.progress-container.complete .progress-text {
-    color: #4CAF50;
+.indas-survey-form .progress-container.complete .progress-text {
+    color: #4CAF50 !important;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
     .indas-survey-form {
-        margin: 10px;
-        padding: 30px 20px;
+        margin: 10px !important;
+        padding: 30px 20px !important;
     }
 
     .indas-survey-form.success-state {
-        padding: 40px 20px;
+        padding: 40px 20px !important;
     }
 
-    .rating-group {
-        gap: 8px;
+    .indas-survey-form .rating-group {
+        gap: 8px !important;
     }
 
-    .rating-group label {
-        min-width: 40px;
-        padding: 6px 8px;
-        font-size: 14px;
+    .indas-survey-form .rating-group label {
+        min-width: 40px !important;
+        padding: 6px 8px !important;
+        font-size: 14px !important;
     }
 
     .indas-survey-form h3 {
-        font-size: 24px;
+        font-size: 24px !important;
     }
 
     .indas-survey-form h4 {
-        font-size: 18px;
+        font-size: 18px !important;
     }
 
-    .success-text {
-        font-size: 24px;
+    .indas-survey-form .success-text {
+        font-size: 24px !important;
     }
 
-    .success-subtext {
-        font-size: 16px;
+    .indas-survey-form .success-subtext {
+        font-size: 16px !important;
     }
 }
 
 /* Print styles */
 @media print {
     .indas-survey-form {
-        box-shadow: none;
-        border: 1px solid #000;
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
     }
 
     .indas-form-row button[type="submit"] {
-        display: none;
+        display: none !important;
     }
+}
+
+/* Smileys for DA/NE questions */
+.indas-survey-form .radio-group label[data-option="da"]::before {
+    content: '😊' !important;
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    margin-right: 8px !important;
+    font-size: 18px !important;
+    background: transparent !important;
+}
+
+.indas-survey-form .radio-group label[data-option="ne"]::before {
+    content: '😔' !important;
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    margin-right: 8px !important;
+    font-size: 18px !important;
+    background: transparent !important;
+}
+
+.indas-survey-form .radio-group label[data-option="da"]::after,
+.indas-survey-form .radio-group label[data-option="ne"]::after {
+    display: none !important;
 }

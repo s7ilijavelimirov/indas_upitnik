@@ -49,22 +49,6 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // Phone validation - samo Indas forme, izmenjeno za 10+ cifara
-    $('.indas-survey-form input[type="tel"]').on('input', function () {
-        var phone = $(this).val();
-        // Remove all non-digit characters for validation
-        var cleanPhone = phone.replace(/\D/g, '');
-
-        $(this).siblings('.indas-error-text').remove();
-
-        if (cleanPhone.length > 0 && cleanPhone.length < 10) {
-            $(this).addClass('error');
-            $(this).after('<span class="indas-error-text">Telefon mora imati najmanje 10 cifara</span>');
-        } else {
-            $(this).removeClass('error');
-        }
-    });
-
     // Auto-resize textareas - samo Indas forme
     $('.indas-survey-form textarea').on('input', function () {
         this.style.height = 'auto';
@@ -110,7 +94,7 @@ jQuery(document).ready(function ($) {
         // Phone validation - izmenjeno za 10+ cifara
         if ($field.attr('type') === 'tel' && value !== '') {
             var cleanPhone = value.replace(/\D/g, '');
-            if (cleanPhone.length < 10) {
+            if (cleanPhone.length > 0 && cleanPhone.length < 10) {
                 $field.addClass('error');
                 $field.after('<span class="indas-error-text">Telefon mora imati najmanje 10 cifara</span>');
                 isValid = false;
@@ -237,21 +221,29 @@ jQuery(document).ready(function ($) {
         if (!$form.hasClass('indas-survey-form') && !$form.closest('.indas-survey-form').length) {
             return;
         }
-        var totalFields = $form.find('input[required], textarea[required], select[required]').length;
+
+        // Broji ukupan broj required polja
+        var totalFields = 0;
         var filledFields = 0;
         var countedRadioGroups = [];
 
-        $form.find('input[required], textarea[required], select[required]').each(function () {
-            if ($(this).attr('type') === 'radio') {
-                var name = $(this).attr('name');
-                if (countedRadioGroups.indexOf(name) === -1) {
-                    if ($form.find('input[name="' + name + '"]:checked').length > 0) {
-                        filledFields++;
-                    }
-                    countedRadioGroups.push(name);
-                }
-            } else if ($(this).val().trim() !== '') {
+        // Broji required input/textarea polja (ne radio)
+        $form.find('input[required]:not([type="radio"]), textarea[required], select[required]').each(function () {
+            totalFields++;
+            if ($(this).val().trim() !== '') {
                 filledFields++;
+            }
+        });
+
+        // Broji required radio grupe (svaku grupu broji kao 1 polje)
+        $form.find('input[type="radio"][required]').each(function () {
+            var name = $(this).attr('name');
+            if (countedRadioGroups.indexOf(name) === -1) {
+                totalFields++; // Dodaj radio grupu u ukupan broj
+                if ($form.find('input[name="' + name + '"]:checked').length > 0) {
+                    filledFields++; // Ako je nešto checked, grupu smatra popunjenom
+                }
+                countedRadioGroups.push(name);
             }
         });
 
